@@ -28,15 +28,12 @@ def preprocess_data(df):
     """Handle categorical variables and add time features"""
     df = df.copy()
     
-    # Drop Day_of_week column as we'll calculate it from the index
     if 'Day_of_week' in df.columns:
         df = df.drop(columns=['Day_of_week'])
     
-    # Convert categorical variables to numeric using pd.get_dummies
     categorical_cols = ['WeekStatus', 'Load_Type']
     df = pd.get_dummies(df, columns=categorical_cols, dtype=np.float64)
     
-    # Add time-based features
     df["year"] = df.index.year.astype(np.float64)
     df["month"] = df.index.month.astype(np.float64)
     df["dayofweek"] = df.index.dayofweek.astype(np.float64)
@@ -49,7 +46,6 @@ def train_model(df):
     """Train the XGBoost model"""
     df_processed = preprocess_data(df)
     
-    # Split into training and testing
     length = len(df_processed)
     main = int(length * 0.8)
     trainer = df_processed[:main]
@@ -73,21 +69,22 @@ def train_model(df):
         verbose=False
     )
     
-    return model, df_processed.columns
+    return model, tester, X.columns
 
-def plot_predictions(dates, predictions, actual):
+def plot_predictions(tester, model):
     """Plot actual vs predicted values"""
-    fig = go.Figure()
+    X_test = tester.drop(columns=["CO2(tCO2)"])
+    predictions = model.predict(X_test)
     
+    fig = go.Figure()
     fig.add_trace(go.Scatter(
-        x=dates,
-        y=actual,
+        x=tester.index,
+        y=tester["CO2(tCO2)"],
         name="Actual",
         line=dict(color="#00ffcc", width=2)
     ))
-    
     fig.add_trace(go.Scatter(
-        x=dates,
+        x=tester.index,
         y=predictions,
         name="Predicted",
         line=dict(color="#ff00ff", width=2, dash='dash')
@@ -112,7 +109,41 @@ def plot_predictions(dates, predictions, actual):
             gridcolor='rgba(0, 255, 204, 0.2)'
         )
     )
+    return fig
+
+def plot_feature_importance(model, feature_names):
+    """Plot feature importance"""
+    importance = model.feature_importances_
+    features_df = pd.DataFrame({
+        'Feature': feature_names,
+        'Importance': importance
+    }).sort_values('Importance', ascending=True)
     
+    fig = go.Figure(go.Bar(
+        x=features_df['Importance'],
+        y=features_df['Feature'],
+        orientation='h',
+        marker=dict(color="#00ffcc")
+    ))
+    
+    fig.update_layout(
+        title="Feature Importance",
+        xaxis_title="Importance Score",
+        yaxis_title="Features",
+        plot_bgcolor="#111111",
+        paper_bgcolor="#111111",
+        font=dict(color="#00ffcc"),
+        xaxis=dict(
+            showgrid=True,
+            gridwidth=1,
+            gridcolor='rgba(0, 255, 204, 0.2)'
+        ),
+        yaxis=dict(
+            showgrid=True,
+            gridwidth=1,
+            gridcolor='rgba(0, 255, 204, 0.2)'
+        )
+    )
     return fig
 
 def main():
@@ -127,55 +158,99 @@ def main():
         st.header("Model Training")
         if st.button("Train Model"):
             with st.spinner("Training in progress... 🔄"):
-                model, columns = train_model(df)
+                model, test_data, feature_names = train_model(df)
                 st.session_state['model'] = model
-                st.session_state['columns'] = columns
+                st.session_state['test_data'] = test_data
+                st.session_state['feature_names'] = feature_names
                 st.success("Model trained successfully! 🎉")
         
         # Prediction Interface
         if 'model' in st.session_state:
             st.header("Predict CO2 Emissions")
             
-            # Date and Time inputs
+            # Date and Time inputs (limited to 2018-2019)
+            min_date = datetime(2018, 1, 1)
+            max_date = datetime(2019, 12, 31)
+            default_date = datetime(2018, 6, 1)
+            
             col1, col2 = st.columns(2)
             with col1:
-                date = st.date_input("Select Date", value=datetime.now())
+                date = st.date_input(
+                    "Select Date",
+                    value=default_date,
+                    min_value=min_date,
+                    max_value=max_date
+                )
             with col2:
                 time_input = st.time_input("Select Time", value=time(12, 0))
             
+            # Feature sliders
+            st.subheader("Adjust Features")
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                use_kwh = st.slider("Use kWh", min_value=0.0, max_value=df['Use_kWh'].max(), 
+                                  value=float(df['Use_kWh'].mean()))
+                week_status = st.selectbox("Week Status", options=["Weekday", "Weekend"])
+            
+            with col2:
+                lagging_current = st.slider("Lagging Current Reactive Power",
+                                          min_value=0.0,
+                                          max_value=df['Lagging_Current_Reactive.Power_kVarh'].max(),
+                                          value=float(df['Lagging_Current_Reactive.Power_kVarh'].mean()))
+                load_type = st.selectbox("Load Type", 
+                                       options=["Light Load", "Medium Load", "Maximum Load"])
+            
+            with col3:
+                leading_current = st.slider("Leading Current Reactive Power",
+                                          min_value=0.0,
+                                          max_value=df['Leading_Current_Reactive_Power_kVarh'].max(),
+                                          value=float(df['Leading_Current_Reactive_Power_kVarh'].mean()))
+            
             if st.button("Predict CO2 Emissions"):
-                # Combine date and time
+                # Create prediction input
                 datetime_input = datetime.combine(date, time_input)
+                input_data = {
+                    'Use_kWh': use_kwh,
+                    'Lagging_Current_Reactive.Power_kVarh': lagging_current,
+                    'Leading_Current_Reactive_Power_kVarh': leading_current,
+                    'WeekStatus': week_status,
+                    'Load_Type': load_type,
+                    'year': float(datetime_input.year),
+                    'month': float(datetime_input.month),
+                    'day': float(datetime_input.day),
+                    'hour': float(datetime_input.hour),
+                    'dayofweek': float(datetime_input.weekday())
+                }
                 
-                # Create a one-row DataFrame with the same structure as training data
-                input_df = pd.DataFrame(index=[datetime_input])
-                
-                # Add required columns with average values from training data
-                for col in df.columns:
-                    if col != 'CO2(tCO2)':
-                        input_df[col] = df[col].mean()
-                
-                # Process the input data the same way as training data
+                # Create DataFrame and process
+                input_df = pd.DataFrame([input_data])
                 input_processed = preprocess_data(input_df)
                 
                 # Make prediction
                 prediction = st.session_state['model'].predict(input_processed)[0]
-                
-                # Display prediction
-                st.success(f"Predicted CO2 Emissions for {datetime_input}: {prediction:.2f} tCO2")
-                
-                # Plot recent history with prediction
-                recent_data = df.last('7D')  # Last 7 days of data
-                recent_processed = preprocess_data(recent_data)
-                recent_predictions = st.session_state['model'].predict(recent_processed.drop(columns=["CO2(tCO2)"]))
-                
-                fig = plot_predictions(
-                    dates=recent_data.index,
-                    predictions=recent_predictions,
-                    actual=recent_data["CO2(tCO2)"]
+                st.success(f"Predicted CO2 Emissions: {prediction:.2f} tCO2")
+            
+            # Show visualizations
+            st.header("Model Analysis")
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.subheader("Predictions vs Actual Values")
+                pred_fig = plot_predictions(
+                    st.session_state['test_data'],
+                    st.session_state['model']
                 )
-                st.plotly_chart(fig, use_container_width=True)
-                
+                st.plotly_chart(pred_fig, use_container_width=True)
+            
+            with col2:
+                st.subheader("Feature Importance")
+                imp_fig = plot_feature_importance(
+                    st.session_state['model'],
+                    st.session_state['feature_names']
+                )
+                st.plotly_chart(imp_fig, use_container_width=True)
+            
     except Exception as e:
         st.error(f"Error: {str(e)}")
         st.info("Please make sure the data file is in the correct location and format.")
