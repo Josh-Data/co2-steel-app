@@ -113,8 +113,16 @@ def plot_predictions(tester, model):
         paper_bgcolor="#111111",
         font=dict(color="#00ffcc"),
         showlegend=True,
-        xaxis=dict(showgrid=True, gridwidth=1, gridcolor='#00ffcc20'),
-        yaxis=dict(showgrid=True, gridwidth=1, gridcolor='#00ffcc20')
+        xaxis=dict(
+            showgrid=True,
+            gridwidth=1,
+            gridcolor='rgba(0, 255, 204, 0.2)'
+        ),
+        yaxis=dict(
+            showgrid=True,
+            gridwidth=1,
+            gridcolor='rgba(0, 255, 204, 0.2)'
+        )
     )
     
     return fig
@@ -141,8 +149,16 @@ def plot_feature_importance(model):
         plot_bgcolor="#111111",
         paper_bgcolor="#111111",
         font=dict(color="#00ffcc"),
-        xaxis=dict(showgrid=True, gridwidth=1, gridcolor='#00ffcc20'),
-        yaxis=dict(showgrid=True, gridwidth=1, gridcolor='#00ffcc20')
+        xaxis=dict(
+            showgrid=True,
+            gridwidth=1,
+            gridcolor='rgba(0, 255, 204, 0.2)'
+        ),
+        yaxis=dict(
+            showgrid=True,
+            gridwidth=1,
+            gridcolor='rgba(0, 255, 204, 0.2)'
+        )
     )
     
     return fig
