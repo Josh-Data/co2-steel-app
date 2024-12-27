@@ -5,11 +5,10 @@ import plotly.express as px
 import xgboost as xgb
 from sklearn.model_selection import train_test_split as tts
 import plotly.graph_objects as go
-from datetime import datetime, time
 
 # Set page config for dark theme
 st.set_page_config(
-    page_title="Steel Industry CO2 Predictor",
+    page_title="Air Quality CO Predictor",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -25,21 +24,11 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 def preprocess_data(df):
-    """Handle categorical variables and add time features"""
+    """Handle data preprocessing"""
     df = df.copy()
-    
-    if 'Day_of_week' in df.columns:
-        df = df.drop(columns=['Day_of_week'])
-    
-    categorical_cols = ['WeekStatus', 'Load_Type']
-    df = pd.get_dummies(df, columns=categorical_cols, dtype=np.float64)
-    
-    df["year"] = df.index.year.astype(np.float64)
-    df["month"] = df.index.month.astype(np.float64)
-    df["dayofweek"] = df.index.dayofweek.astype(np.float64)
-    df["day"] = df.index.day.astype(np.float64)
-    df["hour"] = df.index.hour.astype(np.float64)
-    
+    for col in df.columns:
+        if col != 'date':
+            df[col] = df[col].astype(np.float64)
     return df
 
 def train_model(df):
@@ -51,8 +40,8 @@ def train_model(df):
     trainer = df_processed[:main]
     tester = df_processed[main:]
     
-    X = trainer.drop(columns=["CO2(tCO2)"])
-    y = trainer["CO2(tCO2)"].astype(np.float64)
+    X = trainer.drop(columns=["CO(GT)"])
+    y = trainer["CO(GT)"].astype(np.float64)
     X_train, X_val, y_train, y_val = tts(X, y, train_size=0.8, random_state=42, shuffle=False)
     
     model = xgb.XGBRegressor(
@@ -71,15 +60,16 @@ def train_model(df):
     
     return model, tester, X.columns
 
+# [Previous plotting functions remain the same]
 def plot_predictions(tester, model):
     """Plot actual vs predicted values"""
-    X_test = tester.drop(columns=["CO2(tCO2)"])
+    X_test = tester.drop(columns=["CO(GT)"])
     predictions = model.predict(X_test)
     
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         x=tester.index,
-        y=tester["CO2(tCO2)"],
+        y=tester["CO(GT)"],
         name="Actual",
         line=dict(color="#00ffcc", width=2)
     ))
@@ -91,9 +81,9 @@ def plot_predictions(tester, model):
     ))
     
     fig.update_layout(
-        title="CO2 Emissions: Actual vs Predicted",
-        xaxis_title="Date",
-        yaxis_title="CO2 Emissions (tCO2)",
+        title="CO Levels: Actual vs Predicted",
+        xaxis_title="Sample",
+        yaxis_title="CO Level",
         plot_bgcolor="#111111",
         paper_bgcolor="#111111",
         font=dict(color="#00ffcc"),
@@ -147,12 +137,11 @@ def plot_feature_importance(model, feature_names):
     return fig
 
 def main():
-    st.title("🏭 Steel Industry CO2 Emissions Predictor")
+    st.title("🌍 Air Quality Predictor")
     
     try:
         # Load data
-        df = pd.read_csv("Steel_industry_data.csv", index_col="date")
-        df.index = pd.to_datetime(df.index, format='%d/%m/%Y %H:%M')
+        df = pd.read_csv("Steel_industry_data.csv")
         
         # Training section
         st.header("Model Training")
@@ -166,61 +155,85 @@ def main():
         
         # Prediction Interface
         if 'model' in st.session_state:
-            st.header("Predict CO2 Emissions")
+            st.header("Predict CO Level")
             
-            # Date and Time inputs (limited to 2018-2019)
-            min_date = datetime(2018, 1, 1)
-            max_date = datetime(2019, 12, 31)
-            default_date = datetime(2018, 6, 1)
-            
-            col1, col2 = st.columns(2)
-            with col1:
-                date = st.date_input(
-                    "Select Date",
-                    value=default_date,
-                    min_value=min_date,
-                    max_value=max_date
-                )
-            with col2:
-                time_input = st.time_input("Select Time", value=time(12, 0))
-            
-            # Feature sliders
-            st.subheader("Adjust Features")
+            # Feature sliders with statistics-based ranges
+            st.subheader("Adjust Sensor Readings")
             col1, col2, col3 = st.columns(3)
             
             with col1:
-                use_kwh = st.slider("Use kWh", min_value=0.0, max_value=df['Use_kWh'].max(), 
-                                  value=float(df['Use_kWh'].mean()))
-                week_status = st.selectbox("Week Status", options=["Weekday", "Weekend"])
+                pt08_s1 = st.slider("PT08.S1(CO)", 
+                                  min_value=921.0,  # 25th percentile
+                                  max_value=1221.0,  # 75th percentile
+                                  value=1053.0)  # median
+                                  
+                pt08_s2 = st.slider("PT08.S2(NMHC)",
+                                  min_value=711.0,
+                                  max_value=1105.0,
+                                  value=895.0)
+                                  
+                pt08_s3 = st.slider("PT08.S3(NOx)",
+                                  min_value=637.0,
+                                  max_value=960.0,
+                                  value=794.0)
+                                  
+                temp = st.slider("Temperature (T)",
+                               min_value=10.9,
+                               max_value=24.1,
+                               value=17.2)
             
             with col2:
-                lagging_current = st.slider("Lagging Current Reactive Power",
-                                          min_value=0.0,
-                                          max_value=df['Lagging_Current_Reactive.Power_kVarh'].max(),
-                                          value=float(df['Lagging_Current_Reactive.Power_kVarh'].mean()))
-                load_type = st.selectbox("Load Type", 
-                                       options=["Light Load", "Medium Load", "Maximum Load"])
+                nmhc = st.slider("NMHC(GT)",
+                               min_value=-200.0,
+                               max_value=1189.0,
+                               value=-200.0)
+                               
+                nox = st.slider("NOx(GT)",
+                              min_value=50.0,
+                              max_value=284.0,
+                              value=141.0)
+                              
+                no2 = st.slider("NO2(GT)",
+                              min_value=53.0,
+                              max_value=133.0,
+                              value=96.0)
+                              
+                rh = st.slider("Relative Humidity (RH)",
+                             min_value=34.1,
+                             max_value=61.9,
+                             value=48.6)
             
             with col3:
-                leading_current = st.slider("Leading Current Reactive Power",
-                                          min_value=0.0,
-                                          max_value=df['Leading_Current_Reactive_Power_kVarh'].max(),
-                                          value=float(df['Leading_Current_Reactive_Power_kVarh'].mean()))
+                pt08_s4 = st.slider("PT08.S4(NO2)",
+                                  min_value=1185.0,
+                                  max_value=1662.0,
+                                  value=1446.0)
+                                  
+                pt08_s5 = st.slider("PT08.S5(O3)",
+                                  min_value=700.0,
+                                  max_value=1255.0,
+                                  value=942.0)
+                                  
+                ah = st.slider("Absolute Humidity (AH)",
+                             min_value=0.6923,
+                             max_value=1.2962,
+                             value=0.9768,
+                             step=0.0001)
             
-            if st.button("Predict CO2 Emissions"):
+            if st.button("Predict CO Level"):
                 # Create prediction input
-                datetime_input = datetime.combine(date, time_input)
                 input_data = {
-                    'Use_kWh': use_kwh,
-                    'Lagging_Current_Reactive.Power_kVarh': lagging_current,
-                    'Leading_Current_Reactive_Power_kVarh': leading_current,
-                    'WeekStatus': week_status,
-                    'Load_Type': load_type,
-                    'year': float(datetime_input.year),
-                    'month': float(datetime_input.month),
-                    'day': float(datetime_input.day),
-                    'hour': float(datetime_input.hour),
-                    'dayofweek': float(datetime_input.weekday())
+                    'PT08.S1(CO)': pt08_s1,
+                    'NMHC(GT)': nmhc,
+                    'PT08.S2(NMHC)': pt08_s2,
+                    'NOx(GT)': nox,
+                    'PT08.S3(NOx)': pt08_s3,
+                    'NO2(GT)': no2,
+                    'PT08.S4(NO2)': pt08_s4,
+                    'PT08.S5(O3)': pt08_s5,
+                    'T': temp,
+                    'RH': rh,
+                    'AH': ah
                 }
                 
                 # Create DataFrame and process
@@ -229,7 +242,7 @@ def main():
                 
                 # Make prediction
                 prediction = st.session_state['model'].predict(input_processed)[0]
-                st.success(f"Predicted CO2 Emissions: {prediction:.2f} tCO2")
+                st.success(f"Predicted CO Level: {prediction:.2f}")
             
             # Show visualizations
             st.header("Model Analysis")
