@@ -256,4 +256,3 @@ def main():
         st.info("Please make sure the data file is in the correct location and format.")
 
 if __name__ == "__main__":
-    main()
