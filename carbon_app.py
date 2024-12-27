@@ -1,3 +1,4 @@
+# [Previous imports remain the same]
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -5,163 +6,70 @@ import plotly.express as px
 import xgboost as xgb
 from sklearn.model_selection import train_test_split as tts
 import plotly.graph_objects as go
+from datetime import datetime, time
 
-# Set page config for dark theme
-st.set_page_config(
-    page_title="Steel Industry CO2 Predictor",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+# [Previous code remains the same until the main function]
 
-# Custom CSS for dark theme
-st.markdown("""
-    <style>
-    .stApp {
-        background-color: #111111;
-        color: #00ffcc;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+def create_prediction_interface():
+    """Create an interface for making predictions with date/time inputs"""
+    st.header("Make a Prediction")
+    
+    # Date and Time inputs
+    col1, col2 = st.columns(2)
+    with col1:
+        date = st.date_input("Select Date", value=datetime.now())
+    with col2:
+        time_input = st.time_input("Select Time", value=time(12, 0))
+    
+    # Combine date and time
+    datetime_input = datetime.combine(date, time_input)
+    
+    # Create all needed features for prediction
+    features = {}
+    
+    # Time-based features
+    features["year"] = float(datetime_input.year)
+    features["month"] = float(datetime_input.month)
+    features["day"] = float(datetime_input.day)
+    features["hour"] = float(datetime_input.hour)
+    features["dayofweek"] = float(datetime_input.weekday())
+    
+    # Other features with sliders
+    col1, col2 = st.columns(2)
+    with col1:
+        features["Use_kWh"] = st.slider("Use kWh", min_value=0.0, max_value=100.0, value=50.0)
+        features["Lagging_Current_Reactive.Power_kVarh"] = st.slider("Lagging Current", min_value=0.0, max_value=100.0, value=50.0)
+        features["Leading_Current_Reactive_Power_kVarh"] = st.slider("Leading Current", min_value=0.0, max_value=100.0, value=50.0)
+        features["WeekStatus"] = st.selectbox("Week Status", options=["Weekday", "Weekend"])
+    
+    with col2:
+        features["CO2(tCO2)"] = st.slider("Expected CO2", min_value=0.0, max_value=100.0, value=50.0)
+        features["Load_Type"] = st.selectbox("Load Type", options=["Light Load", "Medium Load", "Maximum Load"])
+        
+    return features
 
-def preprocess_data(df):
-    """Handle categorical variables and add time features"""
-    # First, create a copy to avoid modifying the original
-    df = df.copy()
+def predict_co2(model, features):
+    """Make a prediction using the trained model"""
+    # Convert categorical variables to dummy variables
+    # WeekStatus
+    features["WeekStatus_Weekday"] = 1.0 if features["WeekStatus"] == "Weekday" else 0.0
+    features["WeekStatus_Weekend"] = 1.0 if features["WeekStatus"] == "Weekend" else 0.0
     
-    # Drop Day_of_week column as we'll calculate it from the index
-    if 'Day_of_week' in df.columns:
-        df = df.drop(columns=['Day_of_week'])
+    # Load_Type
+    features["Load_Type_Light Load"] = 1.0 if features["Load_Type"] == "Light Load" else 0.0
+    features["Load_Type_Medium Load"] = 1.0 if features["Load_Type"] == "Medium Load" else 0.0
+    features["Load_Type_Maximum Load"] = 1.0 if features["Load_Type"] == "Maximum Load" else 0.0
     
-    # Convert categorical variables to numeric using pd.get_dummies
-    categorical_cols = ['WeekStatus', 'Load_Type']
-    df = pd.get_dummies(df, columns=categorical_cols, dtype=np.float64)
+    # Remove original categorical columns
+    del features["WeekStatus"]
+    del features["Load_Type"]
     
-    # Add time-based features
-    df["year"] = df.index.year.astype(np.float64)
-    df["month"] = df.index.month.astype(np.float64)
-    df["dayofweek"] = df.index.dayofweek.astype(np.float64)
-    df["day"] = df.index.day.astype(np.float64)
-    df["hour"] = df.index.hour.astype(np.float64)
+    # Create DataFrame with the same columns as training data
+    input_df = pd.DataFrame([features])
     
-    # Ensure all numeric columns are float64
-    numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
-    for col in numeric_cols:
-        df[col] = df[col].astype(np.float64)
-    
-    return df
-
-def train_model(df):
-    """Train the XGBoost model"""
-    # Preprocess the data first
-    df_processed = preprocess_data(df)
-    
-    # Split into training and testing
-    length = len(df_processed)
-    main = int(length * 0.8)
-    trainer = df_processed[:main]
-    tester = df_processed[main:]
-    
-    X = trainer.drop(columns=["CO2(tCO2)"])
-    y = trainer["CO2(tCO2)"].astype(np.float64)
-    X_train, X_val, y_train, y_val = tts(X, y, train_size=0.8, random_state=42, shuffle=False)
-    
-    # Train the model
-    model = xgb.XGBRegressor(
-        n_estimators=25,
-        learning_rate=0.1,
-        max_depth=7,
-        subsample=1.0
-    )
-    
-    # Store feature names
-    st.session_state['feature_names'] = X_train.columns.tolist()
-    
-    # Fit the model
-    model.fit(
-        X_train, 
-        y_train,
-        eval_set=[(X_val, y_val)],
-        verbose=False
-    )
-    
-    return model, tester
-
-def plot_predictions(tester, model):
-    """Plot actual vs predicted values"""
-    X_test = tester.drop(columns=['CO2(tCO2)'])
-    predictions = model.predict(X_test)
-    
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=tester.index,
-        y=tester['CO2(tCO2)'],
-        name="Actual",
-        line=dict(color="#00ffcc", width=2)
-    ))
-    fig.add_trace(go.Scatter(
-        x=tester.index,
-        y=predictions,
-        name="Predicted",
-        line=dict(color="#ff00ff", width=2, dash='dash')
-    ))
-    
-    fig.update_layout(
-        title="CO2 Emissions: Actual vs Predicted",
-        xaxis_title="Date",
-        yaxis_title="CO2 Emissions (tCO2)",
-        plot_bgcolor="#111111",
-        paper_bgcolor="#111111",
-        font=dict(color="#00ffcc"),
-        showlegend=True,
-        xaxis=dict(
-            showgrid=True,
-            gridwidth=1,
-            gridcolor='rgba(0, 255, 204, 0.2)'
-        ),
-        yaxis=dict(
-            showgrid=True,
-            gridwidth=1,
-            gridcolor='rgba(0, 255, 204, 0.2)'
-        )
-    )
-    
-    return fig
-
-def plot_feature_importance(model):
-    """Plot feature importance"""
-    importance = model.feature_importances_
-    features_df = pd.DataFrame({
-        'Feature': st.session_state['feature_names'],
-        'Importance': importance
-    }).sort_values('Importance', ascending=True)
-    
-    fig = go.Figure(go.Bar(
-        x=features_df['Importance'],
-        y=features_df['Feature'],
-        orientation='h',
-        marker=dict(color="#00ffcc")
-    ))
-    
-    fig.update_layout(
-        title="Feature Importance",
-        xaxis_title="Importance Score",
-        yaxis_title="Features",
-        plot_bgcolor="#111111",
-        paper_bgcolor="#111111",
-        font=dict(color="#00ffcc"),
-        xaxis=dict(
-            showgrid=True,
-            gridwidth=1,
-            gridcolor='rgba(0, 255, 204, 0.2)'
-        ),
-        yaxis=dict(
-            showgrid=True,
-            gridwidth=1,
-            gridcolor='rgba(0, 255, 204, 0.2)'
-        )
-    )
-    
-    return fig
+    # Make prediction
+    prediction = model.predict(input_df)[0]
+    return prediction
 
 def main():
     st.title("🏭 Steel Industry CO2 Emissions Predictor")
@@ -170,9 +78,6 @@ def main():
         # Load data
         df = pd.read_csv("Steel_industry_data.csv", index_col="date")
         df.index = pd.to_datetime(df.index, format='%d/%m/%Y %H:%M')
-        
-        # Display initial data info
-        st.write("Data Types:", df.dtypes)
         
         # Training section
         st.header("Model Training")
@@ -186,7 +91,15 @@ def main():
                 
                 st.success("Model trained successfully! 🎉")
         
-        # Visualization section
+        # Prediction Interface
+        if 'model' in st.session_state:
+            features = create_prediction_interface()
+            
+            if st.button("Predict CO2 Emissions"):
+                prediction = predict_co2(st.session_state['model'], features.copy())
+                st.success(f"Predicted CO2 Emissions: {prediction:.2f} tCO2")
+        
+        # Visualization section [Previous visualization code remains the same]
         if 'model' in st.session_state:
             st.header("Model Analysis")
             
