@@ -12,7 +12,10 @@ st.set_page_config(
     page_title="Steel Industry CO2 Predictor",
     layout="wide",
     initial_sidebar_state="expanded"
+    
 )
+
+st.image("/Users/joshsingh/Desktop/co2-steel-app/logo.png", use_column_width=True)
 
 def add_logo():
     st.markdown(
