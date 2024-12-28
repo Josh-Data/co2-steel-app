@@ -33,6 +33,10 @@ def preprocess_data(df):
         df = df.drop(columns=['Day_of_week'])
     
     # Convert categorical variables to numeric
+    # Clean categorical values by replacing spaces with underscores
+    if 'Load_Type' in df.columns:
+        df['Load_Type'] = df['Load_Type'].str.replace(' ', '_')
+    
     categorical_cols = ['WeekStatus', 'Load_Type']
     df = pd.get_dummies(df, columns=categorical_cols, dtype=np.float64)
     
@@ -224,7 +228,7 @@ def main():
                                      value=float(df['Leading_Current_Power_Factor'].mean()))
                 
                 week_status = st.selectbox("Week Status", options=["Weekday", "Weekend"])
-                load_type = st.selectbox("Load Type", options=["Light Load", "Medium Load", "Maximum Load"])
+                load_type = st.selectbox("Load Type", options=["Light_Load", "Medium_Load", "Maximum_Load"])
             
             if st.button("Predict CO2 Emissions"):
                 # Create prediction input
