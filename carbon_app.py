@@ -19,40 +19,61 @@ def add_logo():
     st.markdown(
         """
         <style>
-        /* Previous styles remain the same until slider section */
-
-        /* Comprehensive slider styling to override red */
-        /* Target the slider track base */
-        .stSlider [data-testid="stSliderBase"] {
-            background-color: #f0f0f0 !important;
+        /* Light background elements - dark text */
+        .stApp {
+            background-color: #fafcff;
         }
 
-        /* Target ALL red elements in the slider */
-        .stSlider [data-baseweb="slider"] div,
-        .stSlider [role="slider"],
-        .stSlider [data-testid="stSliderProgress"],
-        .stSlider div[style*="background"],
-        .stSlider div[style*="border-color"] {
-            background-color: #4abdbe !important;
-            border-color: #4abdbe !important;
+        /* Regular text on light background */
+        .stMarkdown, .stText, .stSelectbox label, .stSlider label, h1, h2, h3, h4, h5, h6, label {
+            color: #2c3e50 !important;
         }
 
-        /* Extra specific targeting for the thumb and progress bar */
-        .stSlider [data-baseweb="slider"] > div > div > div {
-            background-color: #4abdbe !important;
+        /* Dark background elements - white text */
+        .element-container > .stAlert {
+            background-color: #333333 !important;
+            color: white !important;
+        }
+        .stAlert > div {
+            color: white !important;
         }
 
-        /* Force override any inline styles */
-        .stSlider * {
-            border-color: #4abdbe !important;
+        /* Button styling - dark background with white text */
+        button[kind="primary"], .stButton>button {
+            background-color: #333333 !important;
+            color: white !important;
+            border: none !important;
         }
 
-        /* Keep container backgrounds transparent */
-        .stSlider > div:not([role="slider"]):not([data-testid="stSliderProgress"]) {
-            background-color: transparent !important;
+        /* Success message with dark background */
+        div[data-baseweb="notification"] {
+            background-color: #333333 !important;
+            color: white !important;
         }
 
-        /* Rest of your styles remain the same */
+        /* Ensure text in notifications is white */
+        div[data-baseweb="notification"] * {
+            color: white !important;
+        }
+
+        /* Sidebar styling */
+        [data-testid="stSidebarNav"] {
+            background-image: url(logo.png);
+            background-repeat: no-repeat;
+            padding-top: 120px;
+            background-position: 20px 20px;
+        }
+
+        /* Simple slider color override */
+        div[data-baseweb="slider"] div {
+            background: #4abdbe !important;
+        }
+
+        /* Select box styling */
+        .stSelectbox > div > div {
+            background-color: white !important;
+            color: #2c3e50 !important;
+        }
         </style>
         """,
         unsafe_allow_html=True,
