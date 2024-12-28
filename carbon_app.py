@@ -8,14 +8,13 @@ import plotly.graph_objects as go
 from datetime import datetime, time
 import os
 
-# Set page config for dark theme
+# Oy vey, let's set up this fancy schmancy dark theme
 st.set_page_config(
     page_title="Steel Industry CO2 Predictor",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for dark theme
 st.markdown("""
     <style>
     .stApp {
@@ -27,7 +26,7 @@ st.markdown("""
 
 @st.cache_data
 def load_data():
-    """Load and cache the dataset"""
+    """Load and cache the dataset like your bubbe's secret recipe"""
     try:
         df = pd.read_csv("Steel_industry_data.csv")
         st.write("Original columns in dataset:", df.columns.tolist())
@@ -37,70 +36,62 @@ def load_data():
 
 def preprocess_data(df, is_training=False):
     """
-    Handle categorical variables and add time features with strict feature ordering
+    Oy gevalt! Let's clean up this data like we're preparing for Pesach!
     """
     df = df.copy()
     
-    # Drop Day_of_week if present
+    # First, like a good baleboste, we'll clean house
     if 'Day_of_week' in df.columns:
         df = df.drop(columns=['Day_of_week'])
     
-    # Clean categorical values
-    if 'Load_Type' in df.columns:
-        df['Load_Type'] = df['Load_Type'].str.replace(' ', '_')
-    
-    # Create zero-filled dummy columns first
-    dummy_cols = {
-        'WeekStatus_Weekday': 0,
-        'WeekStatus_Weekend': 0,
-        'Load_Type_Light_Load': 0,
-        'Load_Type_Medium_Load': 0,
-        'Load_Type_Maximum_Load': 0
-    }
-    
-    for col in dummy_cols:
-        df[col] = 0
-    
-    # Fill in the appropriate dummy values
+    # Handle the categorical variables like a maven
     if 'WeekStatus' in df.columns:
-        for idx, row in df.iterrows():
-            df.at[idx, f'WeekStatus_{row["WeekStatus"]}'] = 1
+        weekstatus_dummies = pd.get_dummies(df['WeekStatus'], prefix='WeekStatus')
+        df = pd.concat([df, weekstatus_dummies], axis=1)
+        df = df.drop('WeekStatus', axis=1)
     
     if 'Load_Type' in df.columns:
-        for idx, row in df.iterrows():
-            df.at[idx, f'Load_Type_{row["Load_Type"]}'] = 1
+        # Clean it up like your bubby's kitchen
+        df['Load_Type'] = df['Load_Type'].str.strip().str.replace(' ', '_')
+        loadtype_dummies = pd.get_dummies(df['Load_Type'], prefix='Load_Type')
+        df = pd.concat([df, loadtype_dummies], axis=1)
+        df = df.drop('Load_Type', axis=1)
     
-    # Drop original categorical columns
-    df = df.drop(columns=['WeekStatus', 'Load_Type'], errors='ignore')
-    
-    # Ensure all numeric columns are float64
-    numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
-    for col in numeric_cols:
-        df[col] = df[col].astype(np.float64)
+    # Make everything float64, or your model will plotz!
+    for col in df.columns:
+        if col != 'CO2(tCO2)':  # Don't touch the target, it's shayna
+            try:
+                df[col] = df[col].astype(np.float64)
+            except Exception as e:
+                st.error(f"Oy vey! Problem with column {col}: {str(e)}")
+                st.write(f"Column {col} unique values:", df[col].unique())
+                raise
     
     return df
 
 def train_model(df):
-    """Train the XGBoost model"""
+    """Train the model like you're teaching your kinderlach"""
     st.write("Training data columns:", df.columns.tolist())
     
-    # Find CO2 column with exact name
-    co2_column = 'CO2(tCO2)'  # Use exact column name from the dataset
+    co2_column = 'CO2(tCO2)'
     if co2_column not in df.columns:
-        st.error(f"CO2 column '{co2_column}' not found! Available columns:")
+        st.error(f"Oy gevalt! No CO2 column found! We have these columns:")
         st.write(df.columns.tolist())
-        raise ValueError(f"CO2 column '{co2_column}' not found in dataset")
+        raise ValueError(f"Missing CO2 column - such a tzimmes!")
     
     st.write(f"Using {co2_column} as target variable")
     
-    # Store CO2 values before preprocessing
-    co2_values = df[co2_column].copy()
+    # Keep the CO2 values kosher
+    co2_values = df[co2_column].astype(np.float64)
     
-    # Process data
+    # Process the data like you're making gefilte fish
     df_processed = preprocess_data(df, is_training=True)
     st.write("Processed data columns:", df_processed.columns.tolist())
     
-    # Add CO2 values back
+    # A bissel debugging information
+    st.write("Data types after preprocessing:", df_processed.dtypes.to_dict())
+    
+    # Put the CO2 values back like the cherry on the babka
     df_processed[co2_column] = co2_values
     
     length = len(df_processed)
@@ -109,12 +100,13 @@ def train_model(df):
     tester = df_processed[main:]
     
     X = trainer.drop(columns=[co2_column])
-    y = trainer[co2_column].astype(np.float64)
+    y = trainer[co2_column]
     
     st.write("Feature columns for training:", X.columns.tolist())
     
     X_train, X_val, y_train, y_val = tts(X, y, train_size=0.8, random_state=42, shuffle=False)
     
+    # Make a model that's a real mensch
     model = xgb.XGBRegressor(
         n_estimators=25,
         learning_rate=0.1,
@@ -132,10 +124,10 @@ def train_model(df):
     return model, tester, X.columns
 
 def plot_predictions(tester, model):
-    """Plot actual vs predicted values"""
+    """Plot predictions like you're plotting shidduchim"""
     co2_column = 'CO2(tCO2)'
     if co2_column not in tester.columns:
-        st.error(f"CO2 column '{co2_column}' not found for plotting!")
+        st.error(f"Oy vey iz mir! No CO2 column for plotting!")
         return None
     
     X_test = tester.drop(columns=[co2_column])
@@ -160,22 +152,12 @@ def plot_predictions(tester, model):
         plot_bgcolor="#111111",
         paper_bgcolor="#111111",
         font=dict(color="#00ffcc"),
-        showlegend=True,
-        xaxis=dict(
-            showgrid=True,
-            gridwidth=1,
-            gridcolor='rgba(0, 255, 204, 0.2)'
-        ),
-        yaxis=dict(
-            showgrid=True,
-            gridwidth=1,
-            gridcolor='rgba(0, 255, 204, 0.2)'
-        )
+        showlegend=True
     )
     return fig
 
 def plot_feature_importance(model, feature_names):
-    """Plot feature importance"""
+    """Plot feature importance like reading the megillah"""
     importance = model.feature_importances_
     features_df = pd.DataFrame({
         'Feature': feature_names,
@@ -195,59 +177,46 @@ def plot_feature_importance(model, feature_names):
         yaxis_title="Features",
         plot_bgcolor="#111111",
         paper_bgcolor="#111111",
-        font=dict(color="#00ffcc"),
-        xaxis=dict(
-            showgrid=True,
-            gridwidth=1,
-            gridcolor='rgba(0, 255, 204, 0.2)'
-        ),
-        yaxis=dict(
-            showgrid=True,
-            gridwidth=1,
-            gridcolor='rgba(0, 255, 204, 0.2)'
-        )
+        font=dict(color="#00ffcc")
     )
     return fig
 
 def main():
     st.title("🏭 Steel Industry CO2 Emissions Predictor")
     
-    # Load data with error handling
+    # Load the data like you're unpacking your bubby's suitcase
     df, error = load_data()
     if error:
-        st.error(f"Error loading data: {error}")
-        st.write("Please make sure 'Steel_industry_data.csv' is in the correct location.")
+        st.error(f"Such tsuris! Error loading data: {error}")
         return
         
     if df is None:
-        st.error("Could not load the dataset.")
+        st.error("Oy vey, no data!")
         return
         
-    st.success("Data loaded successfully!")
+    st.success("Nu, the data loaded successfully!")
     st.write("Dataset Shape:", df.shape)
-    st.write("First few rows of the dataset:")
+    st.write("First few rows of this mishegoss:")
     st.write(df.head())
     
-    # Training section
+    # Training section - like teaching your kinderlach to make challah
     st.header("Model Training")
     if st.button("Train Model"):
-        with st.spinner("Training in progress... 🔄"):
+        with st.spinner("Training in progress... have some patience, bubbeleh! 🔄"):
             try:
                 model, test_data, feature_names = train_model(df)
                 st.session_state['model'] = model
                 st.session_state['test_data'] = test_data
                 st.session_state['feature_names'] = feature_names
-                st.success("Model trained successfully! 🎉")
+                st.success("Mazel tov! Model trained successfully! 🎉")
             except Exception as e:
-                st.error(f"Error during training: {str(e)}")
+                st.error(f"Oy gevalt! Error during training: {str(e)}")
                 return
 
-    # Prediction Interface
+    # Prediction Interface - where the magic happens
     if 'model' in st.session_state:
         st.header("Predict CO2 Emissions")
         
-        # Power usage features
-        st.subheader("Power Usage Features")
         col1, col2 = st.columns(2)
         
         with col1:
@@ -282,19 +251,15 @@ def main():
                           max_value=86400,
                           value=43200)
         
-        # Categorical features
-        st.subheader("Categorical Features")
+        # Categories, like choosing between kugel and tzimmes
         col1, col2 = st.columns(2)
-        
         with col1:
             week_status = st.selectbox("Week Status", options=["Weekday", "Weekend"])
-        
         with col2:
             load_type = st.selectbox("Load Type", options=["Light_Load", "Medium_Load", "Maximum_Load"])
         
         if st.button("Predict CO2 Emissions"):
             try:
-                # Create prediction input
                 input_data = {
                     'Usage_kWh': usage_kwh,
                     'Lagging_Current_Reactive.Power_kVarh': lagging_current,
@@ -306,19 +271,17 @@ def main():
                     'Load_Type': load_type
                 }
                 
-                # Create DataFrame and process
                 input_df = pd.DataFrame([input_data])
                 input_processed = preprocess_data(input_df, is_training=False)
                 
-                # Make prediction
                 prediction = st.session_state['model'].predict(input_processed)[0]
                 st.success(f"Predicted CO2 Emissions: {prediction:.2f} tCO2")
                 
             except Exception as e:
-                st.error(f"Error during prediction: {str(e)}")
-                st.write("Debug - Input Features:", input_processed.columns.tolist())
+                st.error(f"Oy vey iz mir! Error during prediction: {str(e)}")
+                st.write("Debug info:", input_processed.columns.tolist())
         
-        # Show visualizations
+        # Show the plotzes (plots)
         st.header("Model Analysis")
         col1, col2 = st.columns(2)
         
