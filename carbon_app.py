@@ -64,29 +64,24 @@ def add_logo():
             background-position: 20px 20px;
         }
 
-        /* Slider styling - Updated for #4abdbe color */
-        /* Base track */
+        /* Slider styling - Fixed version */
+        /* Base track should be light */
         .stSlider div[data-testid="stSliderBase"] {
-            background-color: #f0f0f0 !important;
+            background-color: #e6e6e6 !important;
         }
         
-        /* Progress bar and fill */
+        /* Only the progress/value part should be turquoise */
         .stSlider div[data-testid="stSliderProgress"] {
             background-color: #4abdbe !important;
         }
         
-        /* Slider handle/thumb */
+        /* The handle/thumb should match */
         .stSlider div[role="slider"] {
             background-color: #4abdbe !important;
             border-color: #4abdbe !important;
         }
-        
-        /* Additional slider elements that might need color override */
-        .stSlider div[data-baseweb="slider"] div {
-            background-color: #4abdbe !important;
-        }
 
-        /* Ensure container backgrounds are neutral */
+        /* Make sure the slider container is transparent */
         .stSlider > div > div {
             background-color: transparent !important;
         }
