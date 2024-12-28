@@ -34,40 +34,20 @@ def load_data():
     """Load and cache the dataset"""
     try:
         df = pd.read_csv("Steel_industry_data.csv")
+        st.write("Original columns in dataset:", df.columns.tolist())
         if 'date' in df.columns:
             df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y %H:%M')
             df.set_index('date', inplace=True)
-        # Print columns for debugging
-        st.write("Columns in dataset:", df.columns.tolist())
         return df, None
     except Exception as e:
         return None, str(e)
-
-# Feature order definition
-FEATURE_ORDER = [
-    'Usage_kWh',
-    'Lagging_Current_Reactive.Power_kVarh',
-    'Leading_Current_Reactive_Power_kVarh',
-    'Lagging_Current_Power_Factor',
-    'Leading_Current_Power_Factor',
-    'NSM',
-    'year',
-    'month',
-    'day',
-    'hour',
-    'dayofweek',
-    'WeekStatus_Weekday',
-    'WeekStatus_Weekend',
-    'Load_Type_Light_Load',
-    'Load_Type_Medium_Load',
-    'Load_Type_Maximum_Load'
-]
 
 def preprocess_data(df, is_training=False):
     """
     Handle categorical variables and add time features with strict feature ordering
     """
     df = df.copy()
+    st.write("Columns before preprocessing:", df.columns.tolist())
     
     # Drop Day_of_week if present
     if 'Day_of_week' in df.columns:
@@ -106,40 +86,40 @@ def preprocess_data(df, is_training=False):
     for col in numeric_cols:
         df[col] = df[col].astype(np.float64)
     
-    # Reorder columns to match expected feature order
-    available_features = [col for col in FEATURE_ORDER if col in df.columns]
-    df = df[available_features]
-    
+    st.write("Columns after preprocessing:", df.columns.tolist())
     return df
 
 def train_model(df):
     """Train the XGBoost model"""
-    # First, let's print the columns to debug
-    st.write("Available columns:", df.columns.tolist())
+    st.write("Training data columns:", df.columns.tolist())
     
-    # Find the CO2 column - check for different possible names
-    co2_column_options = ["CO2(tCO2)", "CO2", "CO2 (tCO2)", "CO2_tCO2"]
-    co2_column = None
-    for col in co2_column_options:
-        if col in df.columns:
-            co2_column = col
-            break
-    
-    if co2_column is None:
-        st.error("Could not find CO2 column in dataset. Available columns:")
+    # Find CO2 column - being more flexible with the search
+    co2_cols = [col for col in df.columns if 'CO2' in col.upper()]
+    if not co2_cols:
+        st.error("No CO2 column found! Available columns:")
         st.write(df.columns.tolist())
-        raise ValueError("CO2 column not found in dataset")
+        raise ValueError("No CO2 column found in dataset")
+    
+    co2_column = co2_cols[0]  # Take the first matching column
+    st.write(f"Using {co2_column} as target variable")
     
     df_processed = preprocess_data(df, is_training=True)
+    st.write("Processed data columns:", df_processed.columns.tolist())
+    
+    # Keep CO2 column during preprocessing
+    if co2_column not in df_processed.columns:
+        df_processed[co2_column] = df[co2_column]
     
     length = len(df_processed)
     main = int(length * 0.8)
     trainer = df_processed[:main]
     tester = df_processed[main:]
     
-    # Use the found CO2 column name
     X = trainer.drop(columns=[co2_column])
     y = trainer[co2_column].astype(np.float64)
+    
+    st.write("Feature columns for training:", X.columns.tolist())
+    
     X_train, X_val, y_train, y_val = tts(X, y, train_size=0.8, random_state=42, shuffle=False)
     
     model = xgb.XGBRegressor(
@@ -160,9 +140,13 @@ def train_model(df):
 
 def plot_predictions(tester, model):
     """Plot actual vs predicted values"""
-    # Find the CO2 column name in tester
-    co2_column = [col for col in tester.columns if "CO2" in col][0]
+    # Find CO2 column
+    co2_cols = [col for col in tester.columns if 'CO2' in col.upper()]
+    if not co2_cols:
+        st.error("No CO2 column found for plotting!")
+        return None
     
+    co2_column = co2_cols[0]
     X_test = tester.drop(columns=[co2_column])
     predictions = model.predict(X_test)
     
@@ -362,7 +346,8 @@ def main():
                 st.session_state['test_data'],
                 st.session_state['model']
             )
-            st.plotly_chart(pred_fig, use_container_width=True)
+            if pred_fig:
+                st.plotly_chart(pred_fig, use_container_width=True)
         
         with col2:
             st.subheader("Feature Importance")
