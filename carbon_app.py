@@ -74,16 +74,17 @@ def add_logo():
             background-color: white !important;
             color: #2c3e50 !important;
         }
-        /* New rules to change red sliders to turquoise */
+        /* Add rules for red slider elements */
         .st-emotion-cache-1dj3ksd {
             background-color: #4abdbe !important;
         }
-        /* Target filled track portion */
-        div[data-baseweb="slider"] div[class*="Track--filled"] {
+        div[data-baseweb="slider"] div[class*="Track__TrackFilled"] {
             background-color: #4abdbe !important;
         }
-        /* Ensure slider thumb matches */
         div[data-baseweb="slider"] div[class*="Thumb"] {
+            background-color: #4abdbe !important;
+        }
+        div[role="slider"] [class*="Track--filled"] {
             background-color: #4abdbe !important;
         }
         </style>
@@ -91,7 +92,6 @@ def add_logo():
         unsafe_allow_html=True,
     )
 add_logo()
-
 @st.cache_data
 def load_data():
     """Load and cache the dataset"""
