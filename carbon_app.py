@@ -65,29 +65,30 @@ def add_logo():
             background-position: 20px 20px;
         }
         
-        /* Slider styling */
-        /* Main slider track - light background */
-        .stSlider [data-baseweb="slider"] {
+        /* Slider styling - FIXED VERSION */
+        /* Remove turquoise background */
+        .stSlider div[data-testid="stSliderBase"] {
             background-color: #f0f0f0 !important;
         }
         
-        /* Progress bar and active part of slider */
-        .stSlider [data-baseweb="slider"] > div:first-child {
+        /* Make the progress bar (slider line) green */
+        .stSlider div[data-testid="stSliderProgress"] {
             background-color: #4abdbe !important;
         }
         
-        /* Slider thumb */
-        .stSlider [data-baseweb="slider"] div[role="slider"] {
+        /* Style the slider thumb */
+        .stSlider div[role="slider"] {
             background-color: #4abdbe !important;
             border-color: #4abdbe !important;
         }
         
-        /* Reset any background colors that might be set on container elements */
-        .stSlider > div {
+        /* Ensure container backgrounds are neutral */
+        .stSlider > div > div {
             background-color: transparent !important;
         }
         
-        .stSlider div[data-testid="stSliderBase"] {
+        /* Remove any unwanted background colors */
+        [data-testid="stBlock"] {
             background-color: transparent !important;
         }
         
@@ -101,7 +102,6 @@ def add_logo():
         unsafe_allow_html=True,
     )
 add_logo()
-
 
 @st.cache_data
 def load_data():
