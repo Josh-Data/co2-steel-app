@@ -270,7 +270,17 @@ def plot_predictions(tester, model):
         plot_bgcolor="#fafcff",
         paper_bgcolor="#fafcff",
         font=dict(color="#2c3e50"),
-        showlegend=True
+        showlegend=True,
+        xaxis=dict(
+            title=dict(font=dict(color="#34495e")),  # Charcoal for x-axis title
+            tickfont=dict(color="#34495e"),         # Charcoal for x-axis ticks
+            color="#34495e"                         # Explicit axis font color
+        ),
+        yaxis=dict(
+            title=dict(font=dict(color="#34495e")),  # Charcoal for y-axis title
+            tickfont=dict(color="#34495e"),         # Charcoal for y-axis ticks
+            color="#34495e"                         # Explicit axis font color
+        )
     )
     return fig
 
