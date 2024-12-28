@@ -5,10 +5,9 @@ import plotly.express as px
 import xgboost as xgb
 from sklearn.model_selection import train_test_split as tts
 import plotly.graph_objects as go
-from datetime import datetime, time
+from datetime import datetime
 import os
 
-# Oy vey, let's set up this fancy schmancy dark theme
 st.set_page_config(
     page_title="Steel Industry CO2 Predictor",
     layout="wide",
@@ -26,72 +25,86 @@ st.markdown("""
 
 @st.cache_data
 def load_data():
-    """Load and cache the dataset like your bubbe's secret recipe"""
+    """Load and cache the dataset"""
     try:
         df = pd.read_csv("Steel_industry_data.csv")
+        
+        # Convert date column to datetime and extract features
+        if 'date' in df.columns:
+            df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y %H:%M')
+            df['year'] = df['date'].dt.year
+            df['month'] = df['date'].dt.month
+            df['hour'] = df['date'].dt.hour
+            df = df.drop('date', axis=1)  # Drop original date column
+            
         st.write("Original columns in dataset:", df.columns.tolist())
         return df, None
     except Exception as e:
         return None, str(e)
 
 def preprocess_data(df, is_training=False):
-    """
-    Oy gevalt! Let's clean up this data like we're preparing for Pesach!
-    """
+    """Handle categorical variables and ensure proper data types"""
     df = df.copy()
     
-    # First, like a good baleboste, we'll clean house
+    # Drop Day_of_week if present
     if 'Day_of_week' in df.columns:
         df = df.drop(columns=['Day_of_week'])
     
-    # Handle the categorical variables like a maven
+    # Handle categorical variables
     if 'WeekStatus' in df.columns:
         weekstatus_dummies = pd.get_dummies(df['WeekStatus'], prefix='WeekStatus')
         df = pd.concat([df, weekstatus_dummies], axis=1)
         df = df.drop('WeekStatus', axis=1)
     
     if 'Load_Type' in df.columns:
-        # Clean it up like your bubby's kitchen
         df['Load_Type'] = df['Load_Type'].str.strip().str.replace(' ', '_')
         loadtype_dummies = pd.get_dummies(df['Load_Type'], prefix='Load_Type')
         df = pd.concat([df, loadtype_dummies], axis=1)
         df = df.drop('Load_Type', axis=1)
     
-    # Make everything float64, or your model will plotz!
+    # Ensure all numeric columns are float64
+    numeric_columns = [
+        'Usage_kWh', 
+        'Lagging_Current_Reactive.Power_kVarh',
+        'Leading_Current_Reactive_Power_kVarh', 
+        'Lagging_Current_Power_Factor',
+        'Leading_Current_Power_Factor',
+        'NSM',
+        'year',
+        'month',
+        'hour'
+    ]
+    
     for col in df.columns:
-        if col != 'CO2(tCO2)':  # Don't touch the target, it's shayna
+        if col != 'CO2(tCO2)' and (col in numeric_columns or col.startswith(('WeekStatus_', 'Load_Type_'))):
             try:
                 df[col] = df[col].astype(np.float64)
             except Exception as e:
-                st.error(f"Oy vey! Problem with column {col}: {str(e)}")
+                st.error(f"Error converting column {col} to float64: {str(e)}")
                 st.write(f"Column {col} unique values:", df[col].unique())
                 raise
     
     return df
 
 def train_model(df):
-    """Train the model like you're teaching your kinderlach"""
+    """Train the XGBoost model"""
     st.write("Training data columns:", df.columns.tolist())
     
     co2_column = 'CO2(tCO2)'
     if co2_column not in df.columns:
-        st.error(f"Oy gevalt! No CO2 column found! We have these columns:")
+        st.error(f"CO2 column '{co2_column}' not found! Available columns:")
         st.write(df.columns.tolist())
-        raise ValueError(f"Missing CO2 column - such a tzimmes!")
+        raise ValueError(f"Missing CO2 column!")
     
-    st.write(f"Using {co2_column} as target variable")
-    
-    # Keep the CO2 values kosher
+    # Store CO2 values before preprocessing
     co2_values = df[co2_column].astype(np.float64)
     
-    # Process the data like you're making gefilte fish
+    # Process data
     df_processed = preprocess_data(df, is_training=True)
     st.write("Processed data columns:", df_processed.columns.tolist())
-    
-    # A bissel debugging information
     st.write("Data types after preprocessing:", df_processed.dtypes.to_dict())
     
-    # Put the CO2 values back like the cherry on the babka
+    # Add CO2 values back
     df_processed[co2_column] = co2_values
     
     length = len(df_processed)
@@ -102,11 +115,8 @@ def train_model(df):
     X = trainer.drop(columns=[co2_column])
     y = trainer[co2_column]
     
-    st.write("Feature columns for training:", X.columns.tolist())
-    
     X_train, X_val, y_train, y_val = tts(X, y, train_size=0.8, random_state=42, shuffle=False)
     
-    # Make a model that's a real mensch
     model = xgb.XGBRegressor(
         n_estimators=25,
         learning_rate=0.1,
@@ -124,10 +134,10 @@ def train_model(df):
     return model, tester, X.columns
 
 def plot_predictions(tester, model):
-    """Plot predictions like you're plotting shidduchim"""
+    """Plot actual vs predicted values"""
     co2_column = 'CO2(tCO2)'
     if co2_column not in tester.columns:
-        st.error(f"Oy vey iz mir! No CO2 column for plotting!")
+        st.error(f"CO2 column '{co2_column}' not found for plotting!")
         return None
     
     X_test = tester.drop(columns=[co2_column])
@@ -157,7 +167,7 @@ def plot_predictions(tester, model):
     return fig
 
 def plot_feature_importance(model, feature_names):
-    """Plot feature importance like reading the megillah"""
+    """Plot feature importance"""
     importance = model.feature_importances_
     features_df = pd.DataFrame({
         'Feature': feature_names,
@@ -184,39 +194,56 @@ def plot_feature_importance(model, feature_names):
 def main():
     st.title("🏭 Steel Industry CO2 Emissions Predictor")
     
-    # Load the data like you're unpacking your bubby's suitcase
     df, error = load_data()
     if error:
-        st.error(f"Such tsuris! Error loading data: {error}")
+        st.error(f"Error loading data: {error}")
         return
         
     if df is None:
-        st.error("Oy vey, no data!")
+        st.error("Could not load the dataset!")
         return
         
-    st.success("Nu, the data loaded successfully!")
+    st.success("Data loaded successfully!")
     st.write("Dataset Shape:", df.shape)
-    st.write("First few rows of this mishegoss:")
+    st.write("First few rows:")
     st.write(df.head())
     
-    # Training section - like teaching your kinderlach to make challah
+    # Training section
     st.header("Model Training")
     if st.button("Train Model"):
-        with st.spinner("Training in progress... have some patience, bubbeleh! 🔄"):
+        with st.spinner("Training in progress... 🔄"):
             try:
                 model, test_data, feature_names = train_model(df)
                 st.session_state['model'] = model
                 st.session_state['test_data'] = test_data
                 st.session_state['feature_names'] = feature_names
-                st.success("Mazel tov! Model trained successfully! 🎉")
+                st.success("Model trained successfully! 🎉")
             except Exception as e:
-                st.error(f"Oy gevalt! Error during training: {str(e)}")
+                st.error(f"Error during training: {str(e)}")
                 return
 
-    # Prediction Interface - where the magic happens
+    # Prediction Interface
     if 'model' in st.session_state:
         st.header("Predict CO2 Emissions")
         
+        # Time-based inputs
+        st.subheader("Date Information")
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            year = st.selectbox("Year", options=[2018, 2019], index=0)
+            month = st.selectbox("Month", options=list(range(1, 13)), index=0)
+        
+        with col2:
+            hour = st.selectbox("Hour", options=list(range(24)), index=12)
+            nsm = hour * 3600  # Convert hour to seconds since midnight
+        
+        with col3:
+            week_status = st.selectbox("Week Status", options=["Weekday", "Weekend"])
+            load_type = st.selectbox("Load Type", options=["Light_Load", "Medium_Load", "Maximum_Load"])
+        
+        # Power usage features
+        st.subheader("Power Usage Features")
         col1, col2 = st.columns(2)
         
         with col1:
@@ -245,18 +272,6 @@ def main():
                                  min_value=float(df['Leading_Current_Power_Factor'].min()),
                                  max_value=float(df['Leading_Current_Power_Factor'].max()),
                                  value=float(df['Leading_Current_Power_Factor'].mean()))
-            
-            nsm = st.slider("NSM (Seconds since midnight)", 
-                          min_value=0,
-                          max_value=86400,
-                          value=43200)
-        
-        # Categories, like choosing between kugel and tzimmes
-        col1, col2 = st.columns(2)
-        with col1:
-            week_status = st.selectbox("Week Status", options=["Weekday", "Weekend"])
-        with col2:
-            load_type = st.selectbox("Load Type", options=["Light_Load", "Medium_Load", "Maximum_Load"])
         
         if st.button("Predict CO2 Emissions"):
             try:
@@ -267,6 +282,9 @@ def main():
                     'Lagging_Current_Power_Factor': lagging_pf,
                     'Leading_Current_Power_Factor': leading_pf,
                     'NSM': nsm,
+                    'year': year,
+                    'month': month,
+                    'hour': hour,
                     'WeekStatus': week_status,
                     'Load_Type': load_type
                 }
@@ -278,10 +296,10 @@ def main():
                 st.success(f"Predicted CO2 Emissions: {prediction:.2f} tCO2")
                 
             except Exception as e:
-                st.error(f"Oy vey iz mir! Error during prediction: {str(e)}")
-                st.write("Debug info:", input_processed.columns.tolist())
+                st.error(f"Error during prediction: {str(e)}")
+                st.write("Debug - Input Features:", input_processed.columns.tolist())
         
-        # Show the plotzes (plots)
+        # Show visualizations
         st.header("Model Analysis")
         col1, col2 = st.columns(2)
         
