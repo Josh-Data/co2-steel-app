@@ -15,8 +15,6 @@ st.set_page_config(
     
 )
 
-st.image("/Users/joshsingh/Desktop/co2-steel-app/logo.png", use_column_width=True)
-
 def add_logo():
     st.markdown(
         """
