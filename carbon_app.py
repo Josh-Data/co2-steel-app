@@ -64,22 +64,29 @@ def add_logo():
             background-position: 20px 20px;
         }
 
-        /* Reset the unwanted turquoise background */
-        [data-testid="stMetric"] {
+        /* Fix metric containers - force white background */
+        [data-testid="metric-container"] {
             background-color: white !important;
         }
 
-        /* Target the slider color and text */
-        .stSlider [data-baseweb="slider"] > div {
+        /* Override ALL slider-related colors */
+        div[data-baseweb="slider"] > div,
+        div[data-baseweb="slider"] div[class*="Track"],
+        div[data-baseweb="slider"] div[class*="InnerThumb"],
+        div[data-baseweb="slider"] div[class*="ThumbValue"] {
             background-color: #4abdbe !important;
-        }
-
-        .stSlider [data-testid="stMarkdownContainer"] p {
             color: #2c3e50 !important;
         }
 
-        .stSlider [data-testid="baseButton-secondary"] {
+        /* Force white background on container */
+        .stSlider > div:first-child {
             background-color: white !important;
+        }
+
+        /* Override any red text */
+        .stSlider [data-testid="stMarkdownContainer"] p,
+        .stSlider span {
+            color: #2c3e50 !important;
         }
 
         /* Select box styling */
