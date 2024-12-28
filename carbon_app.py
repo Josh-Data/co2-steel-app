@@ -266,6 +266,9 @@ def plot_predictions(tester, model):
         paper_bgcolor="#fafcff",
         font=dict(color="#2c3e50"),
         showlegend=True,
+        legend=dict(
+            font=dict(color="#34495e")  # Charcoal color for legend text
+        ),
         xaxis=dict(
             title=dict(font=dict(color="#34495e")),  # Charcoal for x-axis title
             tickfont=dict(color="#34495e"),         # Charcoal for x-axis ticks
@@ -278,6 +281,7 @@ def plot_predictions(tester, model):
         )
     )
     return fig
+
 
 def plot_feature_importance(model, feature_names):
     """Plot feature importance"""
