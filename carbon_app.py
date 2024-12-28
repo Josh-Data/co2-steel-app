@@ -66,16 +66,20 @@ def add_logo():
         }
         
         /* Slider styling */
-        .stSlider > div > div > div {
+        /* Target the slider track */
+        .stSlider > div > div > div[data-baseweb="slider"] {
             background-color: #e5e5e5 !important;
         }
         
-        .stSlider > div > div > div > div[style*="background"] {
-            background-color: #4addbe !important;
+        /* Target the filled portion of the slider */
+        .stSlider > div > div > div[data-baseweb="slider"] > div {
+            background-color: #4abdbe !important;
         }
         
-        .stSlider > div > div > div > div > div[role="slider"] {
-            background-color: #4addbe !important;
+        /* Target the slider thumb */
+        .stSlider > div > div > div[data-baseweb="slider"] > div > div[role="slider"] {
+            background-color: #4abdbe !important;
+            border-color: #4abdbe !important;
         }
         
         /* Select box styling */
