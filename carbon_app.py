@@ -24,8 +24,13 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-def preprocess_data(df):
-    """Handle categorical variables and add time features"""
+def preprocess_data(df, is_training=False):
+    """
+    Handle categorical variables and add time features
+    Parameters:
+        df: DataFrame to preprocess
+        is_training: Boolean indicating if this is training data
+    """
     df = df.copy()
     
     # Drop Day_of_week as we'll calculate it from year/month/day
@@ -36,9 +41,32 @@ def preprocess_data(df):
     if 'Load_Type' in df.columns:
         df['Load_Type'] = df['Load_Type'].str.replace(' ', '_')
     
-    # Convert categorical variables
-    categorical_cols = ['WeekStatus', 'Load_Type']
-    df = pd.get_dummies(df, columns=categorical_cols, dtype=np.float64)
+    # Define all possible categories for each categorical variable
+    weekstatus_categories = ['Weekday', 'Weekend']
+    loadtype_categories = ['Light_Load', 'Medium_Load', 'Maximum_Load']
+    
+    # Create dummy variables with all possible categories
+    if is_training:
+        # For training data, let pandas create the dummy columns naturally
+        weekstatus_dummies = pd.get_dummies(df['WeekStatus'], prefix='WeekStatus')
+        loadtype_dummies = pd.get_dummies(df['Load_Type'], prefix='Load_Type')
+    else:
+        # For prediction data, explicitly create all dummy columns
+        weekstatus_dummies = pd.DataFrame(0, index=df.index, 
+                                        columns=[f'WeekStatus_{cat}' for cat in weekstatus_categories])
+        loadtype_dummies = pd.DataFrame(0, index=df.index, 
+                                      columns=[f'Load_Type_{cat}' for cat in loadtype_categories])
+        
+        # Set the appropriate dummy variables to 1
+        for idx, row in df.iterrows():
+            if 'WeekStatus' in df.columns:
+                weekstatus_dummies.loc[idx, f'WeekStatus_{row["WeekStatus"]}'] = 1
+            if 'Load_Type' in df.columns:
+                loadtype_dummies.loc[idx, f'Load_Type_{row["Load_Type"]}'] = 1
+    
+    # Drop original categorical columns and join dummy variables
+    df = df.drop(columns=['WeekStatus', 'Load_Type'], errors='ignore')
+    df = pd.concat([df, weekstatus_dummies, loadtype_dummies], axis=1)
     
     # Ensure all numeric columns are float64
     numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
@@ -49,7 +77,7 @@ def preprocess_data(df):
 
 def train_model(df):
     """Train the XGBoost model"""
-    df_processed = preprocess_data(df)
+    df_processed = preprocess_data(df, is_training=True)
     
     length = len(df_processed)
     main = int(length * 0.8)
@@ -240,7 +268,7 @@ def main():
                 
                 # Create DataFrame and process
                 input_df = pd.DataFrame([input_data])
-                input_processed = preprocess_data(input_df)
+                input_processed = preprocess_data(input_df, is_training=False)  # Added is_training parameter
                 
                 # Make prediction
                 prediction = st.session_state['model'].predict(input_processed)[0]
