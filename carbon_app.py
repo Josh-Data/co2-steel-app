@@ -50,24 +50,30 @@ def preprocess_data(df, is_training=False):
     if 'Day_of_week' in df.columns:
         df = df.drop(columns=['Day_of_week'])
     
+    # Define expected column orders
+    expected_weekstatus = ['WeekStatus_Weekday', 'WeekStatus_Weekend']
+    expected_loadtype = ['Load_Type_Light_Load', 'Load_Type_Medium_Load', 'Load_Type_Maximum_Load']
+    
     # Handle categorical variables
     if 'WeekStatus' in df.columns:
         df['WeekStatus'] = df['WeekStatus'].str.strip()
         weekstatus_dummies = pd.get_dummies(df['WeekStatus'], prefix='WeekStatus')
-        # Ensure all expected columns are present
-        for col in ['WeekStatus_Weekday', 'WeekStatus_Weekend']:
+        # Ensure all expected columns are present and in correct order
+        for col in expected_weekstatus:
             if col not in weekstatus_dummies.columns:
                 weekstatus_dummies[col] = 0
+        weekstatus_dummies = weekstatus_dummies[expected_weekstatus]
         df = pd.concat([df, weekstatus_dummies], axis=1)
         df = df.drop('WeekStatus', axis=1)
     
     if 'Load_Type' in df.columns:
         df['Load_Type'] = df['Load_Type'].str.strip().str.replace(' ', '_')
         loadtype_dummies = pd.get_dummies(df['Load_Type'], prefix='Load_Type')
-        # Ensure all expected columns are present
-        for col in ['Load_Type_Light_Load', 'Load_Type_Medium_Load', 'Load_Type_Maximum_Load']:
+        # Ensure all expected columns are present and in correct order
+        for col in expected_loadtype:
             if col not in loadtype_dummies.columns:
                 loadtype_dummies[col] = 0
+        loadtype_dummies = loadtype_dummies[expected_loadtype]
         df = pd.concat([df, loadtype_dummies], axis=1)
         df = df.drop('Load_Type', axis=1)
     
@@ -89,7 +95,31 @@ def preprocess_data(df, is_training=False):
         if col != 'CO2(tCO2)' and (col in numeric_columns or col.startswith(('WeekStatus_', 'Load_Type_'))):
             df[col] = df[col].astype(np.float64)
     
-    return df
+    # Ensure consistent column order
+    expected_columns = [
+        'Usage_kWh', 
+        'Lagging_Current_Reactive.Power_kVarh',
+        'Leading_Current_Reactive_Power_kVarh', 
+        'Lagging_Current_Power_Factor',
+        'Leading_Current_Power_Factor',
+        'NSM',
+        'year',
+        'month',
+        'day',
+        'hour',
+        'WeekStatus_Weekday',
+        'WeekStatus_Weekend',
+        'Load_Type_Light_Load',
+        'Load_Type_Medium_Load',
+        'Load_Type_Maximum_Load'
+    ]
+    
+    # Only include columns that exist in the dataframe
+    columns_to_use = [col for col in expected_columns if col in df.columns]
+    if 'CO2(tCO2)' in df.columns:
+        columns_to_use.append('CO2(tCO2)')
+    
+    return df[columns_to_use]
 
 def train_model(df):
     """Train the XGBoost model"""
