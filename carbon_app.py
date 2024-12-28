@@ -24,16 +24,33 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
+# Define feature orders globally to ensure consistency
+FEATURE_ORDER = [
+    'Usage_kWh',
+    'Lagging_Current_Reactive.Power_kVarh',
+    'Leading_Current_Reactive_Power_kVarh',
+    'Lagging_Current_Power_Factor',
+    'Leading_Current_Power_Factor',
+    'NSM',
+    'year',
+    'month',
+    'day',
+    'hour',
+    'dayofweek',
+    'WeekStatus_Weekday',
+    'WeekStatus_Weekend',
+    'Load_Type_Light_Load',
+    'Load_Type_Medium_Load',
+    'Load_Type_Maximum_Load'
+]
+
 def preprocess_data(df, is_training=False):
     """
-    Handle categorical variables and add time features
-    Parameters:
-        df: DataFrame to preprocess
-        is_training: Boolean indicating if this is training data
+    Handle categorical variables and add time features with strict feature ordering
     """
     df = df.copy()
     
-    # Drop Day_of_week as we'll calculate it from year/month/day
+    # Drop Day_of_week if present
     if 'Day_of_week' in df.columns:
         df = df.drop(columns=['Day_of_week'])
     
@@ -41,37 +58,38 @@ def preprocess_data(df, is_training=False):
     if 'Load_Type' in df.columns:
         df['Load_Type'] = df['Load_Type'].str.replace(' ', '_')
     
-    # Define all possible categories for each categorical variable
-    weekstatus_categories = ['Weekday', 'Weekend']
-    loadtype_categories = ['Light_Load', 'Medium_Load', 'Maximum_Load']
+    # Create zero-filled dummy columns first
+    dummy_cols = {
+        'WeekStatus_Weekday': 0,
+        'WeekStatus_Weekend': 0,
+        'Load_Type_Light_Load': 0,
+        'Load_Type_Medium_Load': 0,
+        'Load_Type_Maximum_Load': 0
+    }
     
-    # Create dummy variables with all possible categories
-    if is_training:
-        # For training data, let pandas create the dummy columns naturally
-        weekstatus_dummies = pd.get_dummies(df['WeekStatus'], prefix='WeekStatus')
-        loadtype_dummies = pd.get_dummies(df['Load_Type'], prefix='Load_Type')
-    else:
-        # For prediction data, explicitly create all dummy columns
-        weekstatus_dummies = pd.DataFrame(0, index=df.index, 
-                                        columns=[f'WeekStatus_{cat}' for cat in weekstatus_categories])
-        loadtype_dummies = pd.DataFrame(0, index=df.index, 
-                                      columns=[f'Load_Type_{cat}' for cat in loadtype_categories])
-        
-        # Set the appropriate dummy variables to 1
+    for col in dummy_cols:
+        df[col] = 0
+    
+    # Fill in the appropriate dummy values
+    if 'WeekStatus' in df.columns:
         for idx, row in df.iterrows():
-            if 'WeekStatus' in df.columns:
-                weekstatus_dummies.loc[idx, f'WeekStatus_{row["WeekStatus"]}'] = 1
-            if 'Load_Type' in df.columns:
-                loadtype_dummies.loc[idx, f'Load_Type_{row["Load_Type"]}'] = 1
+            df.at[idx, f'WeekStatus_{row["WeekStatus"]}'] = 1
     
-    # Drop original categorical columns and join dummy variables
+    if 'Load_Type' in df.columns:
+        for idx, row in df.iterrows():
+            df.at[idx, f'Load_Type_{row["Load_Type"]}'] = 1
+    
+    # Drop original categorical columns
     df = df.drop(columns=['WeekStatus', 'Load_Type'], errors='ignore')
-    df = pd.concat([df, weekstatus_dummies, loadtype_dummies], axis=1)
     
     # Ensure all numeric columns are float64
     numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
     for col in numeric_cols:
         df[col] = df[col].astype(np.float64)
+    
+    # Reorder columns to match expected feature order
+    available_features = [col for col in FEATURE_ORDER if col in df.columns]
+    df = df[available_features]
     
     return df
 
@@ -268,7 +286,10 @@ def main():
                 
                 # Create DataFrame and process
                 input_df = pd.DataFrame([input_data])
-                input_processed = preprocess_data(input_df, is_training=False)  # Added is_training parameter
+                input_processed = preprocess_data(input_df, is_training=False)
+                
+                # Debug print
+                st.write("Debug - Input Features:", input_processed.columns.tolist())
                 
                 # Make prediction
                 prediction = st.session_state['model'].predict(input_processed)[0]
@@ -296,6 +317,7 @@ def main():
             
     except Exception as e:
         st.error(f"Error: {str(e)}")
+        st.write("Debug - Error details:", e.__class__.__name__, str(e))
         st.info("Please make sure the data file is in the correct location and format.")
 
 if __name__ == "__main__":
