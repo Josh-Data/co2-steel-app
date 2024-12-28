@@ -295,7 +295,15 @@ def plot_feature_importance(model, feature_names):
         yaxis_title="Features",
         plot_bgcolor="#fafcff",
         paper_bgcolor="#fafcff",
-        font=dict(color="#2c3e50")
+        font=dict(color="#2c3e50"),
+        xaxis=dict(
+            title=dict(font=dict(color="#34495e")),  # Darker charcoal for x-axis title
+            tickfont=dict(color="#34495e")          # Darker charcoal for x-axis ticks
+        ),
+        yaxis=dict(
+            title=dict(font=dict(color="#34495e")),  # Darker charcoal for y-axis title
+            tickfont=dict(color="#34495e")          # Darker charcoal for y-axis ticks
+        )
     )
     return fig
 
