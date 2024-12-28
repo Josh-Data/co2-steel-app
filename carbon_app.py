@@ -64,19 +64,22 @@ def add_logo():
             background-position: 20px 20px;
         }
 
-        /* Slider styling with white background and charcoal text */
-        div[data-baseweb="slider"] div {
-            background: #4abdbe !important;
-        }
-        
-        /* White background for slider container */
-        .stSlider > div {
+        /* Reset the unwanted turquoise background */
+        [data-testid="stMetric"] {
             background-color: white !important;
         }
-        
-        /* Charcoal color for slider value text */
-        .stSlider span[data-testid="stMarkdownContainer"] {
+
+        /* Target the slider color and text */
+        .stSlider [data-baseweb="slider"] > div {
+            background-color: #4abdbe !important;
+        }
+
+        .stSlider [data-testid="stMarkdownContainer"] p {
             color: #2c3e50 !important;
+        }
+
+        .stSlider [data-testid="baseButton-secondary"] {
+            background-color: white !important;
         }
 
         /* Select box styling */
@@ -90,6 +93,8 @@ def add_logo():
     )
 
 add_logo()
+
+
 @st.cache_data
 def load_data():
     """Load and cache the dataset"""
