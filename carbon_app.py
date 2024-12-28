@@ -34,19 +34,27 @@ def add_logo():
             color: #2c3e50 !important;
         }
         
-        /* Slider track (the background) */
-        .stSlider > div > div > div {
-            background-color: #e5e5e5 !important;  /* Gray color */
+        /* Success message styling with charcoal background */
+        .stSuccess {
+            background-color: #333333 !important;  /* Charcoal grey background */
+            color: #ffffff !important;  /* White text */
+            padding: 1rem !important;
+            border-radius: 0.5rem !important;
         }
-
-        /* Slider fill (the part that progresses when you slide) */
+        
+        /* Slider track */
+        .stSlider > div > div > div {
+            background-color: #e5e5e5 !important;
+        }
+        
+        /* Slider fill */
         .stSlider > div > div > div > div[style*="background"] {
-            background-color: #4addbe !important;  /* Turquoise color */
+            background-color: #4addbe !important;
         }
         
         /* Slider thumb */
         .stSlider > div > div > div > div > div[role="slider"] {
-            background-color: #4addbe !important;  /* Turquoise color for the thumb */
+            background-color: #4addbe !important;
         }
         
         /* Button styles */
@@ -66,41 +74,44 @@ def add_logo():
             color: #2c3e50 !important;
         }
         
-        /* Success/error messages */
-        .stSuccess, .stError {
+        /* Error messages */
+        .stError {
             color: #2c3e50 !important;
         }
         
-        /* All selectbox options */
+        /* Selectbox options */
         div[role="listbox"] span {
             color: #2c3e50 !important;
         }
         
-        /* Ensure dropdown text is visible */
+        /* Dropdown text */
         .stSelectbox div[role="button"] {
             color: #2c3e50 !important;
         }
         
-        /* Style for numbers/values displayed */
+        /* Numbers/values */
         .st-emotion-cache-1vbkxwb {
             color: #2c3e50 !important;
         }
         
-        /* Ensure all input labels are visible */
+        /* Input labels */
         label.st-emotion-cache-1whb5pu {
             color: #2c3e50 !important;
         }
         
-        /* Style for widget labels */
+        /* Widget labels */
         .st-emotion-cache-10trblm {
             color: #2c3e50 !important;
         }
         
+        /* Ensure text contrast in success messages */
+        .st-success p {
+            color: #ffffff !important;
+        }
         </style>
         """,
         unsafe_allow_html=True,
     )
-
 add_logo()
 
 @st.cache_data
