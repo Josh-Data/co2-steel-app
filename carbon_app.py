@@ -23,10 +23,12 @@ def add_logo():
         .stApp {
             background-color: #fafcff;
         }
+        
         /* Regular text on light background */
         .stMarkdown, .stText, .stSelectbox label, .stSlider label, h1, h2, h3, h4, h5, h6, label {
             color: #2c3e50 !important;
         }
+
         /* Dark background elements - white text */
         .element-container > .stAlert {
             background-color: #333333 !important;
@@ -35,21 +37,25 @@ def add_logo():
         .stAlert > div {
             color: white !important;
         }
+
         /* Button styling - dark background with white text */
         button[kind="primary"], .stButton>button {
             background-color: #333333 !important;
             color: white !important;
             border: none !important;
         }
+
         /* Success message with dark background */
         div[data-baseweb="notification"] {
             background-color: #333333 !important;
             color: white !important;
         }
+
         /* Ensure text in notifications is white */
         div[data-baseweb="notification"] * {
             color: white !important;
         }
+
         /* Sidebar styling */
         [data-testid="stSidebarNav"] {
             background-image: url(logo.png);
@@ -57,6 +63,7 @@ def add_logo():
             padding-top: 120px;
             background-position: 20px 20px;
         }
+
         /* Target the exact slider elements from the inspection */
         div[data-baseweb="slider"] > div,
         div[data-baseweb="slider"] div[class*="Track"],
@@ -65,33 +72,45 @@ def add_logo():
             background-color: #fafcff!important;
             color: #4abdbe !important;
         }
+
         /* Remove the turquoise background */
         .st-emotion-cache-7ti8k2 {
             background-color: white !important;
         }
+
         /* Select box styling */
         .stSelectbox > div > div {
             background-color: white !important;
             color: #2c3e50 !important;
         }
-        /* Add rules for red slider elements */
-        .st-emotion-cache-1dj3ksd {
-            background-color: #4abdbe !important;
+
+        /* Add rules for turquoise slider */
+        /* Track and thumb elements */
+        div[data-baseweb="slider"] div[class*="Track__TrackFilled"],
+        div[data-baseweb="slider"] div[class*="Track__TrackEmpty"] {
+            background-color: #e5e5e5 !important; /* Gray color for the track */
         }
+
         div[data-baseweb="slider"] div[class*="Track__TrackFilled"] {
-            background-color: #4abdbe !important;
+            background-color: #4abdbe !important; /* Turquoise color for the filled part */
         }
+
         div[data-baseweb="slider"] div[class*="Thumb"] {
-            background-color: #4abdbe !important;
+            background-color: #4abdbe !important; /* Turquoise color for the thumb */
         }
+
         div[role="slider"] [class*="Track--filled"] {
-            background-color: #4abdbe !important;
+            background-color: #4abdbe !important; /* Turquoise color for the slider's filled track */
         }
+
         </style>
         """,
         unsafe_allow_html=True,
     )
+
 add_logo()
+
+
 @st.cache_data
 def load_data():
     """Load and cache the dataset"""
