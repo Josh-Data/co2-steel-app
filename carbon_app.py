@@ -34,19 +34,24 @@ def add_logo():
         }
         
         /* Slider styles */
-        .stSlider > div > div > div[data-baseweb="slider"] {
-            background-color: #e5e5e5 !important;
-        }
-        
-        /* Active part of the slider */
-        .stSlider > div > div > div > div[style*="background"] {
-            background-color: #4addbe !important;
-        }
-        
-        /* Slider thumb */
-        .stSlider > div > div > div > div > div[role="slider"] {
-            background-color: #4addbe !important;
-        }
+       .st-emotion-cache-1y4p8pa {
+           background-color: #4addbe !important;
+       }
+       
+       /* Slider track before thumb */
+       .st-emotion-cache-1y4p8pa > div > div > div > div[style*="background"] {
+           background-color: #4addbe !important;
+       }
+       
+       /* Slider thumb */
+       .st-emotion-cache-1y4p8pa > div > div > div > div > div[role="slider"] {
+           background-color: #4addbe !important;
+       }
+       
+       /* Slider track after thumb */
+       .st-emotion-cache-1y4p8pa > div > div > div {
+           background-color: #e5e5e5 !important;
+       }
         
         /* Button styles */
         button[kind="primary"] {
@@ -295,7 +300,7 @@ def plot_feature_importance(model, feature_names):
     return fig
 
 def main():
-    st.title("🏭 Steel Industry CO2 Emissions Predictor")
+    st.title("Steel Industry CO2 Emissions Predictor")
     
     df, error = load_data()
     if error:
@@ -311,13 +316,13 @@ def main():
     # Training section
     st.header("Model Training")
     if st.button("Train Model"):
-        with st.spinner("Training in progress... 🔄"):
+        with st.spinner("Training in progress..."):
             try:
                 model, test_data, feature_names = train_model(df)
                 st.session_state['model'] = model
                 st.session_state['test_data'] = test_data
                 st.session_state['feature_names'] = feature_names
-                st.success("Model trained successfully! 🎉")
+                st.success("Model trained successfully!")
             except Exception as e:
                 st.error(f"Error during training: {str(e)}")
                 return
