@@ -19,30 +19,66 @@ def add_logo():
     st.markdown(
         """
         <style>
-        /* Your existing CSS rules stay the same */
-
-        /* Add these new rules to target the slider specifically */
-        .st-emotion-cache-1dj3ksd {
-            background-color: #4abdbe !important; /* Using your turquoise color */
+        /* Light background elements - dark text */
+        .stApp {
+            background-color: #fafcff;
         }
-        
-        /* Target the slider track and filled portion */
-        div[role="slider"],
-        div[data-baseweb="slider"] div[class*="Track"],
-        .st-emotion-cache-1dj3ksd div[class*="Track"] {
-            background-color: #4abdbe !important;
+        /* Regular text on light background */
+        .stMarkdown, .stText, .stSelectbox label, .stSlider label, h1, h2, h3, h4, h5, h6, label {
+            color: #2c3e50 !important;
         }
-        
-        /* Target the slider thumb value */
-        div[data-baseweb="slider"] div[class*="ThumbValue"],
-        .st-emotion-cache-1dj3ksd div[class*="ThumbValue"] {
-            background-color: #4abdbe !important;
+        /* Dark background elements - white text */
+        .element-container > .stAlert {
+            background-color: #333333 !important;
             color: white !important;
         }
-        
-        /* Target the active/filled portion of the slider */
-        div[data-baseweb="slider"] div[class*="Track"][aria-valuemax],
-        .st-emotion-cache-1dj3ksd div[aria-valuemax] {
+        .stAlert > div {
+            color: white !important;
+        }
+        /* Button styling - dark background with white text */
+        button[kind="primary"], .stButton>button {
+            background-color: #333333 !important;
+            color: white !important;
+            border: none !important;
+        }
+        /* Success message with dark background */
+        div[data-baseweb="notification"] {
+            background-color: #333333 !important;
+            color: white !important;
+        }
+        /* Ensure text in notifications is white */
+        div[data-baseweb="notification"] * {
+            color: white !important;
+        }
+        /* Sidebar styling */
+        [data-testid="stSidebarNav"] {
+            background-image: url(logo.png);
+            background-repeat: no-repeat;
+            padding-top: 120px;
+            background-position: 20px 20px;
+        }
+        /* Target the exact slider elements from the inspection */
+        div[data-baseweb="slider"] > div,
+        div[data-baseweb="slider"] div[class*="Track"],
+        div[data-baseweb="slider"] div[class*="InnerThumb"],
+        div[data-baseweb="slider"] div[class*="ThumbValue"] {
+            background-color: #fafcff!important;
+            color: #4abdbe !important;
+        }
+        /* Remove the turquoise background */
+        .st-emotion-cache-7ti8k2 {
+            background-color: white !important;
+        }
+        /* Select box styling */
+        .stSelectbox > div > div {
+            background-color: white !important;
+            color: #2c3e50 !important;
+        }
+        /* Target the red sliders to make them turquoise */
+        .st-emotion-cache-1dj3ksd {
+            background-color: #4abdbe !important;
+        }
+        div[role="slider"] div[class*="Track--filled"] {
             background-color: #4abdbe !important;
         }
         </style>
@@ -50,6 +86,7 @@ def add_logo():
         unsafe_allow_html=True,
     )
 add_logo()
+
 @st.cache_data
 def load_data():
     """Load and cache the dataset"""
