@@ -25,19 +25,12 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# Debug information at startup
-st.write("Current working directory:", os.getcwd())
-st.write("Files in current directory:", os.listdir())
-
 @st.cache_data
 def load_data():
     """Load and cache the dataset"""
     try:
         df = pd.read_csv("Steel_industry_data.csv")
         st.write("Original columns in dataset:", df.columns.tolist())
-        if 'date' in df.columns:
-            df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y %H:%M')
-            df.set_index('date', inplace=True)
         return df, None
     except Exception as e:
         return None, str(e)
@@ -47,7 +40,6 @@ def preprocess_data(df, is_training=False):
     Handle categorical variables and add time features with strict feature ordering
     """
     df = df.copy()
-    st.write("Columns before preprocessing:", df.columns.tolist())
     
     # Drop Day_of_week if present
     if 'Day_of_week' in df.columns:
@@ -86,29 +78,30 @@ def preprocess_data(df, is_training=False):
     for col in numeric_cols:
         df[col] = df[col].astype(np.float64)
     
-    st.write("Columns after preprocessing:", df.columns.tolist())
     return df
 
 def train_model(df):
     """Train the XGBoost model"""
     st.write("Training data columns:", df.columns.tolist())
     
-    # Find CO2 column - being more flexible with the search
-    co2_cols = [col for col in df.columns if 'CO2' in col.upper()]
-    if not co2_cols:
-        st.error("No CO2 column found! Available columns:")
+    # Find CO2 column with exact name
+    co2_column = 'CO2(tCO2)'  # Use exact column name from the dataset
+    if co2_column not in df.columns:
+        st.error(f"CO2 column '{co2_column}' not found! Available columns:")
         st.write(df.columns.tolist())
-        raise ValueError("No CO2 column found in dataset")
+        raise ValueError(f"CO2 column '{co2_column}' not found in dataset")
     
-    co2_column = co2_cols[0]  # Take the first matching column
     st.write(f"Using {co2_column} as target variable")
     
+    # Store CO2 values before preprocessing
+    co2_values = df[co2_column].copy()
+    
+    # Process data
     df_processed = preprocess_data(df, is_training=True)
     st.write("Processed data columns:", df_processed.columns.tolist())
     
-    # Keep CO2 column during preprocessing
-    if co2_column not in df_processed.columns:
-        df_processed[co2_column] = df[co2_column]
+    # Add CO2 values back
+    df_processed[co2_column] = co2_values
     
     length = len(df_processed)
     main = int(length * 0.8)
@@ -140,25 +133,21 @@ def train_model(df):
 
 def plot_predictions(tester, model):
     """Plot actual vs predicted values"""
-    # Find CO2 column
-    co2_cols = [col for col in tester.columns if 'CO2' in col.upper()]
-    if not co2_cols:
-        st.error("No CO2 column found for plotting!")
+    co2_column = 'CO2(tCO2)'
+    if co2_column not in tester.columns:
+        st.error(f"CO2 column '{co2_column}' not found for plotting!")
         return None
     
-    co2_column = co2_cols[0]
     X_test = tester.drop(columns=[co2_column])
     predictions = model.predict(X_test)
     
     fig = go.Figure()
     fig.add_trace(go.Scatter(
-        x=tester.index,
         y=tester[co2_column],
         name="Actual",
         line=dict(color="#00ffcc", width=2)
     ))
     fig.add_trace(go.Scatter(
-        x=tester.index,
         y=predictions,
         name="Predicted",
         line=dict(color="#ff00ff", width=2, dash='dash')
@@ -166,7 +155,7 @@ def plot_predictions(tester, model):
     
     fig.update_layout(
         title="CO2 Emissions: Actual vs Predicted",
-        xaxis_title="Date",
+        xaxis_title="Sample",
         yaxis_title="CO2 Emissions (tCO2)",
         plot_bgcolor="#111111",
         paper_bgcolor="#111111",
@@ -257,23 +246,7 @@ def main():
     if 'model' in st.session_state:
         st.header("Predict CO2 Emissions")
         
-        # Time-based inputs
-        st.subheader("Time Information")
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            year = st.number_input("Year", min_value=2018, max_value=2019, value=2018)
-            month = st.number_input("Month", min_value=1, max_value=12, value=6)
-        
-        with col2:
-            day = st.number_input("Day", min_value=1, max_value=31, value=15)
-            hour = st.number_input("Hour", min_value=0, max_value=23, value=12)
-        
-        with col3:
-            week_status = st.selectbox("Week Status", options=["Weekday", "Weekend"])
-            load_type = st.selectbox("Load Type", options=["Light_Load", "Medium_Load", "Maximum_Load"])
-        
-        # Feature sliders
+        # Power usage features
         st.subheader("Power Usage Features")
         col1, col2 = st.columns(2)
         
@@ -303,38 +276,47 @@ def main():
                                  min_value=float(df['Leading_Current_Power_Factor'].min()),
                                  max_value=float(df['Leading_Current_Power_Factor'].max()),
                                  value=float(df['Leading_Current_Power_Factor'].mean()))
+            
+            nsm = st.slider("NSM (Seconds since midnight)", 
+                          min_value=0,
+                          max_value=86400,
+                          value=43200)
+        
+        # Categorical features
+        st.subheader("Categorical Features")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            week_status = st.selectbox("Week Status", options=["Weekday", "Weekend"])
+        
+        with col2:
+            load_type = st.selectbox("Load Type", options=["Light_Load", "Medium_Load", "Maximum_Load"])
         
         if st.button("Predict CO2 Emissions"):
             try:
-                # Create prediction input with explicit time features
+                # Create prediction input
                 input_data = {
                     'Usage_kWh': usage_kwh,
                     'Lagging_Current_Reactive.Power_kVarh': lagging_current,
                     'Leading_Current_Reactive_Power_kVarh': leading_current,
                     'Lagging_Current_Power_Factor': lagging_pf,
                     'Leading_Current_Power_Factor': leading_pf,
-                    'NSM': hour * 3600,  # Convert hour to seconds
+                    'NSM': nsm,
                     'WeekStatus': week_status,
-                    'Load_Type': load_type,
-                    'year': float(year),
-                    'month': float(month),
-                    'day': float(day),
-                    'hour': float(hour),
-                    'dayofweek': datetime(year, month, day).weekday()
+                    'Load_Type': load_type
                 }
                 
                 # Create DataFrame and process
                 input_df = pd.DataFrame([input_data])
                 input_processed = preprocess_data(input_df, is_training=False)
                 
-                # Debug print
-                st.write("Debug - Input Features:", input_processed.columns.tolist())
-                
                 # Make prediction
                 prediction = st.session_state['model'].predict(input_processed)[0]
                 st.success(f"Predicted CO2 Emissions: {prediction:.2f} tCO2")
+                
             except Exception as e:
                 st.error(f"Error during prediction: {str(e)}")
+                st.write("Debug - Input Features:", input_processed.columns.tolist())
         
         # Show visualizations
         st.header("Model Analysis")
