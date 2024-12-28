@@ -29,6 +29,16 @@ def add_logo():
             background-color: #fafcff;
         }
         
+        /* Main page header/banner styling */
+        .st-emotion-cache-18ni7ap {
+            background-color: #333333 !important;
+        }
+        
+        /* Header text in the banner */
+        .st-emotion-cache-18ni7ap h1 {
+            color: #ffffff !important;
+        }
+        
         /* Base styles for all text */
         .stMarkdown, .stText, .stSelectbox label, .stSlider label, .st-emotion-cache-1vbkxwb e1f1d6gn0 {
             color: #2c3e50 !important;
