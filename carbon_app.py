@@ -28,24 +28,17 @@ def preprocess_data(df):
     """Handle categorical variables and add time features"""
     df = df.copy()
     
-    # Drop Day_of_week as we'll calculate it from the index
+    # Drop Day_of_week as we'll calculate it from year/month/day
     if 'Day_of_week' in df.columns:
         df = df.drop(columns=['Day_of_week'])
     
-    # Convert categorical variables to numeric
-    # Clean categorical values by replacing spaces with underscores
+    # Clean categorical values
     if 'Load_Type' in df.columns:
         df['Load_Type'] = df['Load_Type'].str.replace(' ', '_')
     
+    # Convert categorical variables
     categorical_cols = ['WeekStatus', 'Load_Type']
     df = pd.get_dummies(df, columns=categorical_cols, dtype=np.float64)
-    
-    # Add time-based features
-    df["year"] = df.index.year.astype(np.float64)
-    df["month"] = df.index.month.astype(np.float64)
-    df["dayofweek"] = df.index.dayofweek.astype(np.float64)
-    df["day"] = df.index.day.astype(np.float64)
-    df["hour"] = df.index.hour.astype(np.float64)
     
     # Ensure all numeric columns are float64
     numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
@@ -180,24 +173,24 @@ def main():
         if 'model' in st.session_state:
             st.header("Predict CO2 Emissions")
             
-            # Date and Time inputs (limited to 2018-2019)
-            min_date = datetime(2018, 1, 1)
-            max_date = datetime(2019, 12, 31)
-            default_date = datetime(2018, 6, 1)
+            # Time-based inputs
+            st.subheader("Time Information")
+            col1, col2, col3 = st.columns(3)
             
-            col1, col2 = st.columns(2)
             with col1:
-                date = st.date_input(
-                    "Select Date",
-                    value=default_date,
-                    min_value=min_date,
-                    max_value=max_date
-                )
+                year = st.number_input("Year", min_value=2018, max_value=2019, value=2018)
+                month = st.number_input("Month", min_value=1, max_value=12, value=6)
+            
             with col2:
-                time_input = st.time_input("Select Time", value=time(12, 0))
+                day = st.number_input("Day", min_value=1, max_value=31, value=15)
+                hour = st.number_input("Hour", min_value=0, max_value=23, value=12)
+            
+            with col3:
+                week_status = st.selectbox("Week Status", options=["Weekday", "Weekend"])
+                load_type = st.selectbox("Load Type", options=["Light_Load", "Medium_Load", "Maximum_Load"])
             
             # Feature sliders
-            st.subheader("Adjust Features")
+            st.subheader("Power Usage Features")
             col1, col2 = st.columns(2)
             
             with col1:
@@ -226,26 +219,27 @@ def main():
                                      min_value=float(df['Leading_Current_Power_Factor'].min()),
                                      max_value=float(df['Leading_Current_Power_Factor'].max()),
                                      value=float(df['Leading_Current_Power_Factor'].mean()))
-                
-                week_status = st.selectbox("Week Status", options=["Weekday", "Weekend"])
-                load_type = st.selectbox("Load Type", options=["Light_Load", "Medium_Load", "Maximum_Load"])
             
             if st.button("Predict CO2 Emissions"):
-                # Create prediction input
-                datetime_input = datetime.combine(date, time_input)
+                # Create prediction input with explicit time features
                 input_data = {
                     'Usage_kWh': usage_kwh,
                     'Lagging_Current_Reactive.Power_kVarh': lagging_current,
                     'Leading_Current_Reactive_Power_kVarh': leading_current,
                     'Lagging_Current_Power_Factor': lagging_pf,
                     'Leading_Current_Power_Factor': leading_pf,
-                    'NSM': datetime_input.hour * 3600 + datetime_input.minute * 60,
+                    'NSM': hour * 3600,  # Convert hour to seconds
                     'WeekStatus': week_status,
-                    'Load_Type': load_type
+                    'Load_Type': load_type,
+                    'year': float(year),
+                    'month': float(month),
+                    'day': float(day),
+                    'hour': float(hour),
+                    'dayofweek': datetime(year, month, day).weekday()
                 }
                 
                 # Create DataFrame and process
-                input_df = pd.DataFrame([input_data], index=[datetime_input])
+                input_df = pd.DataFrame([input_data])
                 input_processed = preprocess_data(input_df)
                 
                 # Make prediction
