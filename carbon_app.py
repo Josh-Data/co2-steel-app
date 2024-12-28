@@ -69,7 +69,7 @@ def add_logo():
         div[data-baseweb="slider"] div[class*="Track"],
         div[data-baseweb="slider"] div[class*="InnerThumb"],
         div[data-baseweb="slider"] div[class*="ThumbValue"] {
-            background-color: #4abdbe !important;
+            background-color: #fafcff!important;
             color: #2c3e50 !important;
         }
 
