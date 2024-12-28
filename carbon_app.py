@@ -70,7 +70,7 @@ def add_logo():
         div[data-baseweb="slider"] div[class*="InnerThumb"],
         div[data-baseweb="slider"] div[class*="ThumbValue"] {
             background-color: #fafcff!important;
-            color: #2c3e50 !important;
+            color: #4abdbe !important;
         }
 
         /* Remove the turquoise background */
