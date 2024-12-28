@@ -34,20 +34,24 @@ def add_logo():
         }
         
         /* Slider styles */
-        .stSlider > div > div > div > div[style*="background"] {
-            background-color: #4addbe !important; /* Turquoise greenish blue for track before thumb */
-        }
-        
-        /* Slider thumb */
-        .stSlider > div > div > div > div > div[role="slider"] {
-            background-color: #4addbe !important; /* Turquoise greenish blue for thumb */
-            border-radius: 50%; /* Optional: Makes the thumb circular */
-        }
-        
-        /* Slider track after thumb */
-        .stSlider > div > div > div {
-            background-color: #e5e5e5 !important; /* Grey background for track after thumb */
-        }
+       .st-emotion-cache-1y4p8pa {
+           background-color: #4addbe !important;
+       }
+       
+       /* Slider track before thumb */
+       .st-emotion-cache-1y4p8pa > div > div > div > div[style*="background"] {
+           background-color: #4addbe !important;
+       }
+       
+       /* Slider thumb */
+       .st-emotion-cache-1y4p8pa > div > div > div > div > div[role="slider"] {
+           background-color: #4addbe !important;
+       }
+       
+       /* Slider track after thumb */
+       .st-emotion-cache-1y4p8pa > div > div > div {
+           background-color: #e5e5e5 !important;
+       }
         
         /* Button styles */
         button[kind="primary"] {
@@ -102,6 +106,7 @@ def add_logo():
     )
 
 add_logo()
+
 @st.cache_data
 def load_data():
     """Load and cache the dataset"""
@@ -266,9 +271,6 @@ def plot_predictions(tester, model):
         paper_bgcolor="#fafcff",
         font=dict(color="#2c3e50"),
         showlegend=True,
-        legend=dict(
-            font=dict(color="#34495e")  # Charcoal color for legend text
-        ),
         xaxis=dict(
             title=dict(font=dict(color="#34495e")),  # Charcoal for x-axis title
             tickfont=dict(color="#34495e"),         # Charcoal for x-axis ticks
