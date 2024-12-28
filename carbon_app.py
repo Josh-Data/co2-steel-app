@@ -66,20 +66,28 @@ def add_logo():
         }
         
         /* Slider styling */
-        /* Target the slider track */
-        .stSlider > div > div > div[data-baseweb="slider"] {
+        /* Override all slider elements to ensure green color */
+        .stSlider [data-baseweb="slider"] > div {
+            background-color: #4abdbe !important;
+        }
+        
+        .stSlider [data-baseweb="slider"] div[role="slider"] {
+            background-color: #4abdbe !important;
+            border-color: #4abdbe !important;
+        }
+        
+        /* Base track color */
+        .stSlider [data-baseweb="slider"] {
             background-color: #e5e5e5 !important;
         }
         
-        /* Target the filled portion of the slider */
-        .stSlider > div > div > div[data-baseweb="slider"] > div {
+        /* Additional specific selectors to catch all slider parts */
+        .stSlider div[data-testid="stSliderProgress"] {
             background-color: #4abdbe !important;
         }
         
-        /* Target the slider thumb */
-        .stSlider > div > div > div[data-baseweb="slider"] > div > div[role="slider"] {
-            background-color: #4abdbe !important;
-            border-color: #4abdbe !important;
+        .stSlider div[data-testid="stThumbValue"] {
+            color: #4abdbe !important;
         }
         
         /* Select box styling */
@@ -92,6 +100,8 @@ def add_logo():
         unsafe_allow_html=True,
     )
 add_logo()
+
+
 
 @st.cache_data
 def load_data():
