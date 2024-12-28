@@ -64,28 +64,23 @@ def add_logo():
             background-position: 20px 20px;
         }
 
-        /* Fix metric containers - force white background */
-        [data-testid="metric-container"] {
+        /* Target metric container background */
+        [data-testid="stMetricValue"] div {
             background-color: white !important;
         }
 
-        /* Override ALL slider-related colors */
-        div[data-baseweb="slider"] > div,
-        div[data-baseweb="slider"] div[class*="Track"],
-        div[data-baseweb="slider"] div[class*="InnerThumb"],
-        div[data-baseweb="slider"] div[class*="ThumbValue"] {
+        /* Target every possible slider element */
+        .stSlider input,
+        .stSlider div[role="slider"],
+        .stSlider div[data-baseweb],
+        .stSlider div[data-baseweb] div {
             background-color: #4abdbe !important;
+            border-color: #4abdbe !important;
             color: #2c3e50 !important;
         }
 
-        /* Force white background on container */
-        .stSlider > div:first-child {
-            background-color: white !important;
-        }
-
-        /* Override any red text */
-        .stSlider [data-testid="stMarkdownContainer"] p,
-        .stSlider span {
+        /* Target min/max text color */
+        .stSlider div {
             color: #2c3e50 !important;
         }
 
