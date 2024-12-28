@@ -27,21 +27,74 @@ def add_logo():
         .stApp {
             background-color: #fafcff;
         }
-        .stSlider > div > div > div {
-            background-color: #4addbe !important;
-        }
-        .stMarkdown, .stText {
+        
+        /* Base styles for all text */
+        .stMarkdown, .stText, .stSelectbox label, .stSlider label, .st-emotion-cache-1vbkxwb e1f1d6gn0 {
             color: #2c3e50 !important;
         }
+        
+        /* Slider styles */
+        .stSlider > div > div > div[data-baseweb="slider"] {
+            background-color: #e5e5e5 !important;
+        }
+        
+        /* Active part of the slider */
+        .stSlider > div > div > div > div[style*="background"] {
+            background-color: #4addbe !important;
+        }
+        
+        /* Slider thumb */
+        .stSlider > div > div > div > div > div[role="slider"] {
+            background-color: #4addbe !important;
+        }
+        
+        /* Button styles */
         button[kind="primary"] {
             background-color: #4addbe !important;
+            color: white !important;
         }
-        .st-bs {
+        
+        /* Select box and dropdown styles */
+        .stSelectbox > div > div {
+            background-color: white !important;
             color: #2c3e50 !important;
         }
-        div[role="slider"] {
-            background-color: #4addbe !important;
+        
+        /* Headers */
+        h1, h2, h3, h4, h5, h6 {
+            color: #2c3e50 !important;
         }
+        
+        /* Success/error messages */
+        .stSuccess, .stError {
+            color: #2c3e50 !important;
+        }
+        
+        /* All selectbox options */
+        div[role="listbox"] span {
+            color: #2c3e50 !important;
+        }
+        
+        /* Ensure dropdown text is visible */
+        .stSelectbox div[role="button"] {
+            color: #2c3e50 !important;
+        }
+        
+        /* Style for numbers/values displayed */
+        .st-emotion-cache-1vbkxwb {
+            color: #2c3e50 !important;
+        }
+        
+        /* Ensure all input labels are visible */
+        label.st-emotion-cache-1whb5pu {
+            color: #2c3e50 !important;
+        }
+        
+        /* Style for widget labels */
+        .st-emotion-cache-10trblm {
+            color: #2c3e50 !important;
+        }
+        
         </style>
         """,
         unsafe_allow_html=True,
