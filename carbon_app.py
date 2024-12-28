@@ -14,51 +14,19 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Add logo image
-import os
-if os.path.exists("/Users/joshsingh/Desktop/co2-steel-app/logo.png"):
-    st.image("/Users/joshsingh/Desktop/co2-steel-app/logo.png", width=100)
-
-# Rest of the styling
-st.markdown(
-    """
-    <style>
-    .stApp {
-        background-color: #fafcff;
-    }
-    
-    /* Success message in charcoal */
-    .element-container div[data-testid="stText"] {
-        color: #2c3e50 !important;
-    }
-    div[data-testid="stSuccessMessage"] {
-        color: #2c3e50 !important;
-        background-color: rgba(44, 62, 80, 0.1) !important;
-    }
-    
-    /* Slider styles */
-    .stSlider > div > div > div[data-baseweb="slider"] {
-        background-color: #e5e5e5 !important;
-    }
-    
-    /* Active part of the slider */
-    .stSlider > div > div > div > div[style*="background"] {
-        background-color: #4addbe !important;
-    }
-    
-    /* Slider thumb */
-    .stSlider > div > div > div > div > div[role="slider"] {
-        background-color: #4addbe !important;
-    }
-    
-    /* The slider value in charcoal */
-    .stSlider > div[data-baseweb="slider"] > div > div {
-        color: #2c3e50 !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+def add_logo():
+    st.markdown(
+        """
+        <style>
+        [data-testid="stSidebarNav"] {
+            background-image: url(logo.png);
+            background-repeat: no-repeat;
+            padding-top: 120px;
+            background-position: 20px 20px;
+        }
+        .stApp {
+            background-color: #fafcff;
+        }
         
         /* Base styles for all text */
         .stMarkdown, .stText, .stSelectbox label, .stSlider label, .st-emotion-cache-1vbkxwb e1f1d6gn0 {
@@ -287,7 +255,7 @@ def plot_predictions(tester, model):
     fig.add_trace(go.Scatter(
         y=predictions,
         name="Predicted",
-        line=dict(color="#4addbe", width=2, dash='dash')
+        line=dict(color="#2c3e50", width=2, dash='dash')
     ))
     
     fig.update_layout(
@@ -296,19 +264,8 @@ def plot_predictions(tester, model):
         yaxis_title="CO2 Emissions (tCO2)",
         plot_bgcolor="#fafcff",
         paper_bgcolor="#fafcff",
-        font=dict(color="#2c3e50", size=12),
-        showlegend=True,
-        legend=dict(
-            font=dict(color="#2c3e50")
-        ),
-        xaxis=dict(
-            tickfont=dict(color="#2c3e50"),
-            gridcolor="#e5e5e5"
-        ),
-        yaxis=dict(
-            tickfont=dict(color="#2c3e50"),
-            gridcolor="#e5e5e5"
-        )
+        font=dict(color="#2c3e50"),
+        showlegend=True
     )
     return fig
 
@@ -333,15 +290,7 @@ def plot_feature_importance(model, feature_names):
         yaxis_title="Features",
         plot_bgcolor="#fafcff",
         paper_bgcolor="#fafcff",
-        font=dict(color="#2c3e50", size=12),
-        xaxis=dict(
-            tickfont=dict(color="#2c3e50"),
-            gridcolor="#e5e5e5"
-        ),
-        yaxis=dict(
-            tickfont=dict(color="#2c3e50"),
-            gridcolor="#e5e5e5"
-        )
+        font=dict(color="#2c3e50")
     )
     return fig
 
