@@ -64,24 +64,18 @@ def add_logo():
             background-position: 20px 20px;
         }
 
-        /* Target metric container background */
-        [data-testid="stMetricValue"] div {
-            background-color: white !important;
-        }
-
-        /* Target every possible slider element */
-        .stSlider input,
-        .stSlider div[role="slider"],
-        .stSlider div[data-baseweb],
-        .stSlider div[data-baseweb] div {
+        /* Target the exact slider elements from the inspection */
+        div[data-baseweb="slider"] > div,
+        div[data-baseweb="slider"] div[class*="Track"],
+        div[data-baseweb="slider"] div[class*="InnerThumb"],
+        div[data-baseweb="slider"] div[class*="ThumbValue"] {
             background-color: #4abdbe !important;
-            border-color: #4abdbe !important;
             color: #2c3e50 !important;
         }
 
-        /* Target min/max text color */
-        .stSlider div {
-            color: #2c3e50 !important;
+        /* Remove the turquoise background */
+        .st-emotion-cache-7ti8k2 {
+            background-color: white !important;
         }
 
         /* Select box styling */
@@ -95,7 +89,6 @@ def add_logo():
     )
 
 add_logo()
-
 
 @st.cache_data
 def load_data():
