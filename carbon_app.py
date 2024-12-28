@@ -74,11 +74,16 @@ def add_logo():
             background-color: white !important;
             color: #2c3e50 !important;
         }
-        /* Target the red sliders to make them turquoise */
+        /* New rules to change red sliders to turquoise */
         .st-emotion-cache-1dj3ksd {
             background-color: #4abdbe !important;
         }
-        div[role="slider"] div[class*="Track--filled"] {
+        /* Target filled track portion */
+        div[data-baseweb="slider"] div[class*="Track--filled"] {
+            background-color: #4abdbe !important;
+        }
+        /* Ensure slider thumb matches */
+        div[data-baseweb="slider"] div[class*="Thumb"] {
             background-color: #4abdbe !important;
         }
         </style>
