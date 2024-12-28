@@ -33,25 +33,25 @@ def add_logo():
             color: #2c3e50 !important;
         }
         
-        /* Slider styles */
-       .st-emotion-cache-1y4p8pa {
-           background-color: #4addbe !important;
-       }
+        /* Slider container */
+        .stSlider {
+            background-color: #e5e5e5 !important;
+        }
+        
+        /* Slider track before the thumb */
+        .st-emotion-cache-1y4p8pa > div > div > div > div[style*="background"] {
+            background-color: #4addbe !important;
+        }
        
-       /* Slider track before thumb */
-       .st-emotion-cache-1y4p8pa > div > div > div > div[style*="background"] {
-           background-color: #4addbe !important;
-       }
+        /* Slider thumb */
+        .st-emotion-cache-1y4p8pa > div > div > div > div > div[role="slider"] {
+            background-color: #4addbe !important;
+        }
        
-       /* Slider thumb */
-       .st-emotion-cache-1y4p8pa > div > div > div > div > div[role="slider"] {
-           background-color: #4addbe !important;
-       }
-       
-       /* Slider track after thumb */
-       .st-emotion-cache-1y4p8pa > div > div > div {
-           background-color: #e5e5e5 !important;
-       }
+        /* Slider track after the thumb */
+        .st-emotion-cache-1y4p8pa > div > div > div {
+            background-color: #e5e5e5 !important;
+        }
         
         /* Button styles */
         button[kind="primary"] {
