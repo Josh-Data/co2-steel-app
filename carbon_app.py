@@ -19,36 +19,26 @@ def add_logo():
     st.markdown(
         """
         <style>
-        /* Target the main app container */
-        .stApp {
-            background-color: #fafcff;
-        }
-        
-        /* Target the main header container */
-        section[data-testid="stSidebar"] > div {
-            background-color: #fafcff;
-        }
-
-        /* Target the top banner specifically */
-        .css-1dp5vir {
+        /* Target Streamlit's success message specifically */
+        .element-container iframe[title="st.success"] {
             background-color: #333333 !important;
         }
         
-        .css-1dp5vir h1 {
-            color: white !important;
-        }
-        
-        /* Additional banner targeting */
-        .st-emotion-cache-6qob1r {
-            background-color: #333333 !important;
-        }
-        
-        .st-emotion-cache-ue6h4q {
+        div.stAlert {
             background-color: #333333 !important;
             color: white !important;
         }
-
-        /* Sidebar styling */
+        
+        /* Success message specific styling */
+        .element-container div[data-testid="stMarkdownContainer"] > div.stAlert {
+            background-color: #333333 !important;
+            color: white !important;
+        }
+        
+        .stAlert > div[data-testid="stMarkdownContainer"] {
+            color: white !important;
+        }
+        
         [data-testid="stSidebarNav"] {
             background-image: url(logo.png);
             background-repeat: no-repeat;
@@ -56,12 +46,15 @@ def add_logo():
             background-position: 20px 20px;
         }
         
-        /* Base text styles */
+        .stApp {
+            background-color: #fafcff;
+        }
+        
+        /* Rest of your styles */
         .stMarkdown, .stText, .stSelectbox label, .stSlider label {
             color: #2c3e50 !important;
         }
         
-        /* Slider styling */
         .stSlider > div > div > div {
             background-color: #e5e5e5 !important;
         }
@@ -74,51 +67,13 @@ def add_logo():
             background-color: #4addbe !important;
         }
         
-        /* Button styling */
         button[kind="primary"] {
             background-color: #4addbe !important;
             color: white !important;
         }
         
-        /* Select box styling */
         .stSelectbox > div > div {
             background-color: white !important;
-            color: #2c3e50 !important;
-        }
-        
-        /* Header text */
-        h1, h2, h3, h4, h5, h6 {
-            color: #2c3e50 !important;
-        }
-        
-        /* Success/error messages */
-        .stSuccess {
-            background-color: #333333 !important;
-            color: white !important;
-        }
-        
-        .stError {
-            color: #2c3e50 !important;
-        }
-        
-        /* Dropdown and input styling */
-        div[role="listbox"] span {
-            color: #2c3e50 !important;
-        }
-        
-        .stSelectbox div[role="button"] {
-            color: #2c3e50 !important;
-        }
-        
-        .st-emotion-cache-1vbkxwb {
-            color: #2c3e50 !important;
-        }
-        
-        label.st-emotion-cache-1whb5pu {
-            color: #2c3e50 !important;
-        }
-        
-        .st-emotion-cache-10trblm {
             color: #2c3e50 !important;
         }
         </style>
@@ -126,6 +81,8 @@ def add_logo():
         unsafe_allow_html=True,
     )
 add_logo()
+
+
 @st.cache_data
 def load_data():
     """Load and cache the dataset"""
