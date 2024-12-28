@@ -19,26 +19,25 @@ def add_logo():
     st.markdown(
         """
         <style>
-        /* Target Streamlit's success message specifically */
-        .element-container iframe[title="st.success"] {
-            background-color: #333333 !important;
+        /* Target Streamlit's success message */
+        div[data-testid="stMarkdownContainer"] {
+            color: black !important;
         }
         
-        div.stAlert {
-            background-color: #333333 !important;
-            color: white !important;
-        }
-        
-        /* Success message specific styling */
-        .element-container div[data-testid="stMarkdownContainer"] > div.stAlert {
+        .element-container > .stAlert {
             background-color: #333333 !important;
             color: white !important;
         }
         
-        .stAlert > div[data-testid="stMarkdownContainer"] {
+        .stAlert > div {
             color: white !important;
         }
         
+        .element-container div[data-baseweb="notification"] {
+            background-color: #333333 !important;
+        }
+        
+        /* Your existing styles */
         [data-testid="stSidebarNav"] {
             background-image: url(logo.png);
             background-repeat: no-repeat;
@@ -50,8 +49,13 @@ def add_logo():
             background-color: #fafcff;
         }
         
-        /* Rest of your styles */
+        /* Make sure all text elements are visible */
         .stMarkdown, .stText, .stSelectbox label, .stSlider label {
+            color: #2c3e50 !important;
+        }
+        
+        /* Headers and labels should be dark */
+        h1, h2, h3, h4, h5, h6, label {
             color: #2c3e50 !important;
         }
         
