@@ -23,40 +23,39 @@ def add_logo():
         .stApp {
             background-color: #fafcff;
         }
-        
+
         /* Regular text on light background */
         .stMarkdown, .stText, .stSelectbox label, .stSlider label, h1, h2, h3, h4, h5, h6, label {
             color: #2c3e50 !important;
         }
-        
+
         /* Dark background elements - white text */
         .element-container > .stAlert {
             background-color: #333333 !important;
             color: white !important;
         }
-        
         .stAlert > div {
             color: white !important;
         }
-        
+
         /* Button styling - dark background with white text */
         button[kind="primary"], .stButton>button {
             background-color: #333333 !important;
             color: white !important;
             border: none !important;
         }
-        
+
         /* Success message with dark background */
         div[data-baseweb="notification"] {
             background-color: #333333 !important;
             color: white !important;
         }
-        
+
         /* Ensure text in notifications is white */
         div[data-baseweb="notification"] * {
             color: white !important;
         }
-        
+
         /* Sidebar styling */
         [data-testid="stSidebarNav"] {
             background-image: url(logo.png);
@@ -64,34 +63,39 @@ def add_logo():
             padding-top: 120px;
             background-position: 20px 20px;
         }
-        
-        /* Slider styling - FIXED VERSION */
-        /* Remove turquoise background */
+
+        /* Slider styling - Updated for #4abdbe color */
+        /* Base track */
         .stSlider div[data-testid="stSliderBase"] {
             background-color: #f0f0f0 !important;
         }
         
-        /* Make the progress bar (slider line) green */
+        /* Progress bar and fill */
         .stSlider div[data-testid="stSliderProgress"] {
             background-color: #4abdbe !important;
         }
         
-        /* Style the slider thumb */
+        /* Slider handle/thumb */
         .stSlider div[role="slider"] {
             background-color: #4abdbe !important;
             border-color: #4abdbe !important;
         }
         
+        /* Additional slider elements that might need color override */
+        .stSlider div[data-baseweb="slider"] div {
+            background-color: #4abdbe !important;
+        }
+
         /* Ensure container backgrounds are neutral */
         .stSlider > div > div {
             background-color: transparent !important;
         }
-        
+
         /* Remove any unwanted background colors */
         [data-testid="stBlock"] {
             background-color: transparent !important;
         }
-        
+
         /* Select box styling */
         .stSelectbox > div > div {
             background-color: white !important;
@@ -101,6 +105,7 @@ def add_logo():
         """,
         unsafe_allow_html=True,
     )
+
 add_logo()
 
 @st.cache_data
