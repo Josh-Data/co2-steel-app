@@ -14,14 +14,40 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-st.markdown("""
-    <style>
-    .stApp {
-        background-color: #111111;
-        color: #00ffcc;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+def add_logo():
+    st.markdown(
+        """
+        <style>
+        [data-testid="stSidebarNav"] {
+            background-image: url(logo.png);
+            background-repeat: no-repeat;
+            padding-top: 120px;
+            background-position: 20px 20px;
+        }
+        .stApp {
+            background-color: #fafcff;
+        }
+        .stSlider > div > div > div {
+            background-color: #4addbe !important;
+        }
+        .stMarkdown, .stText {
+            color: #2c3e50 !important;
+        }
+        button[kind="primary"] {
+            background-color: #4addbe !important;
+        }
+        .st-bs {
+            color: #2c3e50 !important;
+        }
+        div[role="slider"] {
+            background-color: #4addbe !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+add_logo()
 
 @st.cache_data
 def load_data():
@@ -171,21 +197,21 @@ def plot_predictions(tester, model):
     fig.add_trace(go.Scatter(
         y=tester[co2_column],
         name="Actual",
-        line=dict(color="#00ffcc", width=2)
+        line=dict(color="#4addbe", width=2)
     ))
     fig.add_trace(go.Scatter(
         y=predictions,
         name="Predicted",
-        line=dict(color="#ff00ff", width=2, dash='dash')
+        line=dict(color="#2c3e50", width=2, dash='dash')
     ))
     
     fig.update_layout(
         title="CO2 Emissions: Actual vs Predicted",
         xaxis_title="Sample",
         yaxis_title="CO2 Emissions (tCO2)",
-        plot_bgcolor="#111111",
-        paper_bgcolor="#111111",
-        font=dict(color="#00ffcc"),
+        plot_bgcolor="#fafcff",
+        paper_bgcolor="#fafcff",
+        font=dict(color="#2c3e50"),
         showlegend=True
     )
     return fig
@@ -202,16 +228,16 @@ def plot_feature_importance(model, feature_names):
         x=features_df['Importance'],
         y=features_df['Feature'],
         orientation='h',
-        marker=dict(color="#00ffcc")
+        marker=dict(color="#4addbe")
     ))
     
     fig.update_layout(
         title="Feature Importance",
         xaxis_title="Importance Score",
         yaxis_title="Features",
-        plot_bgcolor="#111111",
-        paper_bgcolor="#111111",
-        font=dict(color="#00ffcc")
+        plot_bgcolor="#fafcff",
+        paper_bgcolor="#fafcff",
+        font=dict(color="#2c3e50")
     )
     return fig
 
