@@ -66,13 +66,13 @@ def add_logo():
         }
         
         /* Slider styling - FIXED VERSION */
-        /* Remove turquoise background */
+        /* Base slider styles */
         .stSlider div[data-testid="stSliderBase"] {
             background-color: #f0f0f0 !important;
         }
         
-        /* Make the progress bar (slider line) green */
-        .stSlider div[data-testid="stSliderProgress"] {
+        /* Style the slider line to match the ball */
+        div[data-testid="stSliderProgress"] {
             background-color: #4abdbe !important;
         }
         
@@ -80,6 +80,18 @@ def add_logo():
         .stSlider div[role="slider"] {
             background-color: #4abdbe !important;
             border-color: #4abdbe !important;
+        }
+        
+        /* Ensure text under sliders is charcoal */
+        .stSlider p, .stSlider span {
+            color: #2c3e50 !important;
+        }
+        
+        /* Style min/max values and current value text */
+        .stSlider [data-testid="stTickBarMin"], 
+        .stSlider [data-testid="stTickBarMax"], 
+        .stSlider [data-testid="stThumbValue"] {
+            color: #2c3e50 !important;
         }
         
         /* Ensure container backgrounds are neutral */
@@ -102,7 +114,6 @@ def add_logo():
         unsafe_allow_html=True,
     )
 add_logo()
-
 @st.cache_data
 def load_data():
     """Load and cache the dataset"""
