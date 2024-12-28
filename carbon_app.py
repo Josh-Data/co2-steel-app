@@ -14,94 +14,51 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-def add_logo():
-    st.markdown(
-        """
-        <style>
-        [data-testid="stSidebarNav"] {
-            background-image: url(logo.png);
-            background-repeat: no-repeat;
-            padding-top: 120px;
-            background-position: 20px 20px;
-        }
-        .stApp {
-            background-color: #fafcff;
-        }
-        
-        /* Base styles for all text */
-        .stMarkdown, .stText, .stSelectbox label, .stSlider label, .st-emotion-cache-1vbkxwb e1f1d6gn0 {
-            color: #2c3e50 !important;
-        }
-        
-        /* Slider track (the background) */
-        .stSlider > div > div > div {
-            background-color: #e5e5e5 !important;  /* Gray color */
-        }
-
-        /* Slider fill (the part that progresses when you slide) */
-        .stSlider > div > div > div > div[style*="background"] {
-            background-color: #4addbe !important;  /* Turquoise color */
-        }
-        
-        /* Slider thumb */
-        .stSlider > div > div > div > div > div[role="slider"] {
-            background-color: #4addbe !important;  /* Turquoise color for the thumb */
-        }
-        
-        /* Button styles */
-        button[kind="primary"] {
-            background-color: #4addbe !important;
-            color: white !important;
-        }
-        
-        /* Select box and dropdown styles */
-        .stSelectbox > div > div {
-            background-color: white !important;
-            color: #2c3e50 !important;
-        }
-        
-        /* Headers */
-        h1, h2, h3, h4, h5, h6 {
-            color: #2c3e50 !important;
-        }
-        
-        /* Success/error messages */
-        .stSuccess, .stError {
-            color: #2c3e50 !important;
-        }
-        
-        /* All selectbox options */
-        div[role="listbox"] span {
-            color: #2c3e50 !important;
-        }
-        
-        /* Ensure dropdown text is visible */
-        .stSelectbox div[role="button"] {
-            color: #2c3e50 !important;
-        }
-        
-        /* Style for numbers/values displayed */
-        .st-emotion-cache-1vbkxwb {
-            color: #2c3e50 !important;
-        }
-        
-        /* Ensure all input labels are visible */
-        label.st-emotion-cache-1whb5pu {
-            color: #2c3e50 !important;
-        }
-        
-        /* Style for widget labels */
-        .st-emotion-cache-10trblm {
-            color: #2c3e50 !important;
-        }
-        
-        </style>
-        """,
-        unsafe_allow_html=True,
+def plot_predictions(tester, model):
+    """Plot actual vs predicted values"""
+    co2_column = 'CO2(tCO2)'
+    if co2_column not in tester.columns:
+        st.error(f"CO2 column '{co2_column}' not found for plotting!")
+        return None
+    
+    X_test = tester.drop(columns=[co2_column])
+    predictions = model.predict(X_test)
+    
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        y=tester[co2_column],
+        name="Actual",
+        line=dict(color="#4addbe", width=2)
+    ))
+    fig.add_trace(go.Scatter(
+        y=predictions,
+        name="Predicted",
+        line=dict(color="#2c3e50", width=2, dash='dash')
+    ))
+    
+    fig.update_layout(
+        title="CO2 Emissions: Actual vs Predicted",
+        xaxis_title="Sample",
+        yaxis_title="CO2 Emissions (tCO2)",
+        plot_bgcolor="#fafcff",
+        paper_bgcolor="#fafcff",
+        font=dict(color="#2c3e50"),
+        showlegend=True,
+        legend=dict(
+            font=dict(color="#34495e")  # Charcoal color for legend text
+        ),
+        xaxis=dict(
+            title=dict(font=dict(color="#34495e")),  # Charcoal for x-axis title
+            tickfont=dict(color="#34495e"),         # Charcoal for x-axis ticks
+            color="#34495e"                         # Explicit axis font color
+        ),
+        yaxis=dict(
+            title=dict(font=dict(color="#34495e")),  # Charcoal for y-axis title
+            tickfont=dict(color="#34495e"),         # Charcoal for y-axis ticks
+            color="#34495e"                         # Explicit axis font color
+        )
     )
-
-add_logo()
-
+    return fig
 @st.cache_data
 def load_data():
     """Load and cache the dataset"""
