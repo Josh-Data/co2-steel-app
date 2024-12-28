@@ -64,9 +64,19 @@ def add_logo():
             background-position: 20px 20px;
         }
 
-        /* Simple slider color override */
+        /* Slider styling with white background and charcoal text */
         div[data-baseweb="slider"] div {
             background: #4abdbe !important;
+        }
+        
+        /* White background for slider container */
+        .stSlider > div {
+            background-color: white !important;
+        }
+        
+        /* Charcoal color for slider value text */
+        .stSlider span[data-testid="stMarkdownContainer"] {
+            color: #2c3e50 !important;
         }
 
         /* Select box styling */
@@ -80,7 +90,6 @@ def add_logo():
     )
 
 add_logo()
-
 @st.cache_data
 def load_data():
     """Load and cache the dataset"""
