@@ -103,6 +103,7 @@ def add_logo():
 
 add_logo()
 
+
 @st.cache_data
 def load_data():
     """Load and cache the dataset"""
