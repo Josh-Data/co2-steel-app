@@ -34,24 +34,20 @@ def add_logo():
         }
         
         /* Slider styles */
-       .st-emotion-cache-1y4p8pa {
-           background-color: #4addbe !important;
-       }
-       
-       /* Slider track before thumb */
-       .st-emotion-cache-1y4p8pa > div > div > div > div[style*="background"] {
-           background-color: #4addbe !important;
-       }
-       
-       /* Slider thumb */
-       .st-emotion-cache-1y4p8pa > div > div > div > div > div[role="slider"] {
-           background-color: #4addbe !important;
-       }
-       
-       /* Slider track after thumb */
-       .st-emotion-cache-1y4p8pa > div > div > div {
-           background-color: #e5e5e5 !important;
-       }
+        .stSlider > div > div > div > div[style*="background"] {
+            background-color: #4addbe !important; /* Turquoise greenish blue for track before thumb */
+        }
+        
+        /* Slider thumb */
+        .stSlider > div > div > div > div > div[role="slider"] {
+            background-color: #4addbe !important; /* Turquoise greenish blue for thumb */
+            border-radius: 50%; /* Optional: Makes the thumb circular */
+        }
+        
+        /* Slider track after thumb */
+        .stSlider > div > div > div {
+            background-color: #e5e5e5 !important; /* Grey background for track after thumb */
+        }
         
         /* Button styles */
         button[kind="primary"] {
@@ -106,7 +102,6 @@ def add_logo():
     )
 
 add_logo()
-
 @st.cache_data
 def load_data():
     """Load and cache the dataset"""
