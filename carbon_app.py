@@ -19,111 +19,113 @@ def add_logo():
     st.markdown(
         """
         <style>
+        /* Target the main app container */
+        .stApp {
+            background-color: #fafcff;
+        }
+        
+        /* Target the main header container */
+        section[data-testid="stSidebar"] > div {
+            background-color: #fafcff;
+        }
+
+        /* Target the top banner specifically */
+        .css-1dp5vir {
+            background-color: #333333 !important;
+        }
+        
+        .css-1dp5vir h1 {
+            color: white !important;
+        }
+        
+        /* Additional banner targeting */
+        .st-emotion-cache-6qob1r {
+            background-color: #333333 !important;
+        }
+        
+        .st-emotion-cache-ue6h4q {
+            background-color: #333333 !important;
+            color: white !important;
+        }
+
+        /* Sidebar styling */
         [data-testid="stSidebarNav"] {
             background-image: url(logo.png);
             background-repeat: no-repeat;
             padding-top: 120px;
             background-position: 20px 20px;
         }
-        .stApp {
-            background-color: #fafcff;
-        }
         
-        /* Main page header/banner styling */
-        .st-emotion-cache-18ni7ap {
-            background-color: #333333 !important;
-        }
-        
-        /* Header text in the banner */
-        .st-emotion-cache-18ni7ap h1 {
-            color: #ffffff !important;
-        }
-        
-        /* Base styles for all text */
-        .stMarkdown, .stText, .stSelectbox label, .stSlider label, .st-emotion-cache-1vbkxwb e1f1d6gn0 {
+        /* Base text styles */
+        .stMarkdown, .stText, .stSelectbox label, .stSlider label {
             color: #2c3e50 !important;
         }
         
-        /* Success message styling with charcoal background */
-        .stSuccess {
-            background-color: #333333 !important;  /* Charcoal grey background */
-            color: #ffffff !important;  /* White text */
-            padding: 1rem !important;
-            border-radius: 0.5rem !important;
-        }
-        
-        /* Slider track */
+        /* Slider styling */
         .stSlider > div > div > div {
             background-color: #e5e5e5 !important;
         }
         
-        /* Slider fill */
         .stSlider > div > div > div > div[style*="background"] {
             background-color: #4addbe !important;
         }
         
-        /* Slider thumb */
         .stSlider > div > div > div > div > div[role="slider"] {
             background-color: #4addbe !important;
         }
         
-        /* Button styles */
+        /* Button styling */
         button[kind="primary"] {
             background-color: #4addbe !important;
             color: white !important;
         }
         
-        /* Select box and dropdown styles */
+        /* Select box styling */
         .stSelectbox > div > div {
             background-color: white !important;
             color: #2c3e50 !important;
         }
         
-        /* Headers */
+        /* Header text */
         h1, h2, h3, h4, h5, h6 {
             color: #2c3e50 !important;
         }
         
-        /* Error messages */
+        /* Success/error messages */
+        .stSuccess {
+            background-color: #333333 !important;
+            color: white !important;
+        }
+        
         .stError {
             color: #2c3e50 !important;
         }
         
-        /* Selectbox options */
+        /* Dropdown and input styling */
         div[role="listbox"] span {
             color: #2c3e50 !important;
         }
         
-        /* Dropdown text */
         .stSelectbox div[role="button"] {
             color: #2c3e50 !important;
         }
         
-        /* Numbers/values */
         .st-emotion-cache-1vbkxwb {
             color: #2c3e50 !important;
         }
         
-        /* Input labels */
         label.st-emotion-cache-1whb5pu {
             color: #2c3e50 !important;
         }
         
-        /* Widget labels */
         .st-emotion-cache-10trblm {
             color: #2c3e50 !important;
-        }
-        
-        /* Ensure text contrast in success messages */
-        .st-success p {
-            color: #ffffff !important;
         }
         </style>
         """,
         unsafe_allow_html=True,
     )
 add_logo()
-
 @st.cache_data
 def load_data():
     """Load and cache the dataset"""
