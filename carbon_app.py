@@ -114,6 +114,8 @@ def add_logo():
         unsafe_allow_html=True,
     )
 add_logo()
+
+
 @st.cache_data
 def load_data():
     """Load and cache the dataset"""
