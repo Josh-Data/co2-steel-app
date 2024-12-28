@@ -33,24 +33,19 @@ def add_logo():
             color: #2c3e50 !important;
         }
         
-        /* Slider container */
-        .stSlider {
-            background-color: #e5e5e5 !important;
+        /* Slider track (the background) */
+        .stSlider > div > div > div {
+            background-color: #e5e5e5 !important;  /* Gray color */
+        }
+
+        /* Slider fill (the part that progresses when you slide) */
+        .stSlider > div > div > div > div[style*="background"] {
+            background-color: #4addbe !important;  /* Turquoise color */
         }
         
-        /* Slider track before the thumb */
-        .st-emotion-cache-1y4p8pa > div > div > div > div[style*="background"] {
-            background-color: #4addbe !important;
-        }
-       
         /* Slider thumb */
-        .st-emotion-cache-1y4p8pa > div > div > div > div > div[role="slider"] {
-            background-color: #4addbe !important;
-        }
-       
-        /* Slider track after the thumb */
-        .st-emotion-cache-1y4p8pa > div > div > div {
-            background-color: #e5e5e5 !important;
+        .stSlider > div > div > div > div > div[role="slider"] {
+            background-color: #4addbe !important;  /* Turquoise color for the thumb */
         }
         
         /* Button styles */
