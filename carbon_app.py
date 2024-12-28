@@ -19,11 +19,17 @@ def add_logo():
     st.markdown(
         """
         <style>
-        /* Target Streamlit's success message */
-        div[data-testid="stMarkdownContainer"] {
-            color: black !important;
+        /* Light background elements - dark text */
+        .stApp {
+            background-color: #fafcff;
         }
         
+        /* Regular text on light background */
+        .stMarkdown, .stText, .stSelectbox label, .stSlider label, h1, h2, h3, h4, h5, h6, label {
+            color: #2c3e50 !important;
+        }
+        
+        /* Dark background elements - white text */
         .element-container > .stAlert {
             background-color: #333333 !important;
             color: white !important;
@@ -33,11 +39,25 @@ def add_logo():
             color: white !important;
         }
         
-        .element-container div[data-baseweb="notification"] {
+        /* Button styling - dark background with white text */
+        button[kind="primary"], .stButton>button {
             background-color: #333333 !important;
+            color: white !important;
+            border: none !important;
         }
         
-        /* Your existing styles */
+        /* Success message with dark background */
+        div[data-baseweb="notification"] {
+            background-color: #333333 !important;
+            color: white !important;
+        }
+        
+        /* Ensure text in notifications is white */
+        div[data-baseweb="notification"] * {
+            color: white !important;
+        }
+        
+        /* Sidebar styling */
         [data-testid="stSidebarNav"] {
             background-image: url(logo.png);
             background-repeat: no-repeat;
@@ -45,20 +65,7 @@ def add_logo():
             background-position: 20px 20px;
         }
         
-        .stApp {
-            background-color: #fafcff;
-        }
-        
-        /* Make sure all text elements are visible */
-        .stMarkdown, .stText, .stSelectbox label, .stSlider label {
-            color: #2c3e50 !important;
-        }
-        
-        /* Headers and labels should be dark */
-        h1, h2, h3, h4, h5, h6, label {
-            color: #2c3e50 !important;
-        }
-        
+        /* Slider styling */
         .stSlider > div > div > div {
             background-color: #e5e5e5 !important;
         }
@@ -71,11 +78,7 @@ def add_logo():
             background-color: #4addbe !important;
         }
         
-        button[kind="primary"] {
-            background-color: #4addbe !important;
-            color: white !important;
-        }
-        
+        /* Select box styling */
         .stSelectbox > div > div {
             background-color: white !important;
             color: #2c3e50 !important;
@@ -85,7 +88,6 @@ def add_logo():
         unsafe_allow_html=True,
     )
 add_logo()
-
 
 @st.cache_data
 def load_data():
