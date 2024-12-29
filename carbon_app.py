@@ -68,13 +68,13 @@ def add_logo():
         }
         /* Thumb (draggable ball): turquoise */
         div[data-baseweb="slider"] div[class*="Thumb"] {
-            background-color: #3333333 !important;
+            background-color: #333333 !important;
             border-color: #4abdbe !important;
         }
         /* Value display background: off-white */
         div[data-baseweb="slider"] div[class*="ThumbValue"] {
             background-color: #fafcff !important;
-            color: #2c3e50 !important;
+            color: #333333 !important;
         }
         /* Ensure slider labels and text match the theme */
         .stSlider label {
