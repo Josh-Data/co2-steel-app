@@ -16,86 +16,76 @@ st.set_page_config(
 )
 
 def add_logo():
-    col1, col2, col3 = st.columns([1, 6, 1])
-    with col1:
-        st.image("images/imagelogo.png", width=150)
-    
     st.markdown(
         """
         <style>
-        /* Main container background */
-        .main {
-            background-color: #fafcff !important;
+        /* Light background elements - dark text */
+        .stApp {
+            background-color: #fafcff;
         }
-        
-        /* Streamlit specific elements */
-        .css-1d391kg, .css-12oz5g7 {
-            background-color: #fafcff !important;
-        }
-        
-        /* Top header/toolbar area */
-        .css-18ni7ap {
-            background-color: #fafcff !important;
-        }
-        
-        /* Side panel/navigation */
-        .css-1dp5vir {
-            background-color: #fafcff !important;
-        }
-        
-        /* Main content area */
-        .css-1d391kg {
-            background-color: #fafcff !important;
-        }
-        
-        /* Block containers */
-        .css-12oz5g7 {
-            background-color: #fafcff !important;
-        }
-        
-        /* Force all stApp elements to have the same background */
-        .stApp > * {
-            background-color: #fafcff !important;
-        }
-        
-        /* Additional elements from your original CSS */
+        /* Regular text on light background */
         .stMarkdown, .stText, .stSelectbox label, .stSlider label, h1, h2, h3, h4, h5, h6, label {
             color: #2c3e50 !important;
         }
-        
+        /* Dark background elements - white text */
+        .element-container > .stAlert {
+            background-color: #333333 !important;
+            color: white !important;
+        }
+        .stAlert > div {
+            color: white !important;
+        }
+        /* Button styling - dark background with white text */
         button[kind="primary"], .stButton>button {
-            background-color: #4abdbe !important;
+            background-color: #333333 !important;
             color: white !important;
             border: none !important;
         }
-        
+        /* Success message with dark background */
+        div[data-baseweb="notification"] {
+            background-color: #333333 !important;
+            color: white !important;
+        }
+        /* Ensure text in notifications is white */
+        div[data-baseweb="notification"] * {
+            color: white !important;
+        }
+        /* Sidebar styling */
+        [data-testid="stSidebarNav"] {
+            background-image: url(logo.png);
+            background-repeat: no-repeat;
+            padding-top: 120px;
+            background-position: 20px 20px;
+        }
+        /* Target the exact slider elements from the inspection */
+        div[data-baseweb="slider"] > div,
+        div[data-baseweb="slider"] div[class*="Track"],
+        div[data-baseweb="slider"] div[class*="InnerThumb"],
+        div[data-baseweb="slider"] div[class*="ThumbValue"] {
+            background-color: #fafcff!important;
+            color: #4abdbe !important;
+        }
+        /* Remove the turquoise background */
         .st-emotion-cache-7ti8k2 {
-            background-color: #fafcff !important;
+            background-color: white !important;
         }
-        
-        /* Slider styling */
-        div[data-baseweb="slider"] div[class*="Track__TrackFilled"],
-        div[data-baseweb="slider"] div[class*="Track__TrackEmpty"] {
-            background-color: #e5e5e5 !important;
+        /* Select box styling */
+        .stSelectbox > div > div {
+            background-color: white !important;
+            color: #2c3e50 !important;
         }
-        div[data-baseweb="slider"] div[class*="Track__TrackFilled"] {
+        /* Target the red sliders to make them turquoise */
+        .st-emotion-cache-1dj3ksd {
             background-color: #4abdbe !important;
         }
-        div[data-baseweb="slider"] div[class*="Thumb"] {
+        div[role="slider"] div[class*="Track--filled"] {
             background-color: #4abdbe !important;
-        }
-        div[role="slider"] [class*="Track--filled"] {
-            background-color: #4abdbe !important;
-        }
-        
-        /* Force iframe and other embedded content backgrounds */
-        iframe, .iframe-container {
-            background-color: #fafcff !important;
         }
         </style>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
+add_logo()
 
 @st.cache_data
 def load_data():
