@@ -82,7 +82,15 @@ def add_logo():
         }
         /* Text under sliders (value labels or auxiliary text) */
         div[data-baseweb="slider"] .stSlider {
-            color: #2c3e50 !important; /* Charcoal color */
+            color: #2c3e50 !important;
+        }
+        /* Target the starting and ending values specifically */
+        div[data-baseweb="slider"] span {
+            color: #2c3e50 !important;
+        }
+        /* Additional targeting for slider text elements */
+        .stSlider p {
+            color: #2c3e50 !important;
         }
         </style>
         """,
