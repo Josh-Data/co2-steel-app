@@ -56,12 +56,18 @@ def add_logo():
             color: white !important;
         }
 
-        /* Sidebar styling */
-        [data-testid="stSidebarNav"] {
-            background-image: url(logo.png);
+            /* Logo styling */
+        .block-container::before {
+            content: '';
+            display: block;
+            background-image: url('/Users/joshsingh/Desktop/co2-steel-app/imagelogo.png');
             background-repeat: no-repeat;
-            padding-top: 120px;
-            background-position: 20px 20px;
+            background-size: contain;
+            width: 150px;  /* Adjust width as needed */
+            height: 80px;  /* Adjust height as needed */
+            position: absolute;
+            top: 20px;
+            left: 20px;
         }
 
         /* Target the exact slider elements from the inspection */
