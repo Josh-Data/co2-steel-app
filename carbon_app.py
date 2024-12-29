@@ -52,7 +52,7 @@ def add_logo():
         }
         /* Sidebar styling */
         [data-testid="stSidebarNav"] {
-            background-image: url(logo.png);
+            background-image: url(imagelogo.png);
             background-repeat: no-repeat;
             padding-top: 120px;
             background-position: 20px 20px;
@@ -64,12 +64,12 @@ def add_logo():
         }
         /* Active (filled) track: turquoise */
         div[role="slider"] div[class*="Track--filled"] {
-            background-color: #4abdbe !important;
+            background-color: #333333 !important;
         }
         /* Thumb (draggable ball): turquoise */
         div[data-baseweb="slider"] div[class*="Thumb"] {
             background-color: #333333 !important;
-            border-color: #4abdbe !important;
+            border-color: #333333 !important;
         }
         /* Value display background: off-white */
         div[data-baseweb="slider"] div[class*="ThumbValue"] {
