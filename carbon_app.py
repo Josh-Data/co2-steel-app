@@ -16,6 +16,8 @@ st.set_page_config(
 )
 
 def add_logo():
+    
+    st.image("imagelogo.png", width=150) 
     st.markdown(
         """
         <style>
