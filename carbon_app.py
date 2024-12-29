@@ -68,7 +68,7 @@ def add_logo():
         }
         /* Thumb (draggable ball): turquoise */
         div[data-baseweb="slider"] div[class*="Thumb"] {
-            background-color: #4abdbe !important;
+            background-color: #3333333 !important;
             border-color: #4abdbe !important;
         }
         /* Value display background: off-white */
