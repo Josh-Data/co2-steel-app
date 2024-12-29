@@ -35,18 +35,17 @@ def add_logo():
         .stAlert > div {
             color: white !important;
         }
-        /* Button styling - dark background with white text */
+        /* Button styling */
         button[kind="primary"], .stButton>button {
             background-color: #333333 !important;
             color: white !important;
             border: none !important;
         }
-        /* Success message with dark background */
+        /* Success message */
         div[data-baseweb="notification"] {
             background-color: #333333 !important;
             color: white !important;
         }
-        /* Ensure text in notifications is white */
         div[data-baseweb="notification"] * {
             color: white !important;
         }
@@ -57,39 +56,35 @@ def add_logo():
             padding-top: 120px;
             background-position: 20px 20px;
         }
-        /* Slider styles */
-        /* Inactive (background) track: light gray */
-        div[data-baseweb="slider"] div[class*="Track"] {
+        /* Slider specific styles with higher specificity */
+        /* Track background */
+        .stSlider div[data-baseweb="slider"] div[class*="Track"] {
             background-color: #e0e0e0 !important;
         }
-        /* Active (filled) track: dark gray */
-        div[role="slider"] div[class*="Track--filled"] {
-            background-color: #333333 !important;
+        /* Active track */
+        .stSlider div[data-baseweb="slider"] div[class*="Track--filled"] {
+            background-color: #00CED1 !important;  /* Turquoise color */
         }
-        /* Thumb (draggable ball): dark gray */
-        div[data-baseweb="slider"] div[class*="Thumb"] {
-            background-color: #333333 !important;
-            border-color: #333333 !important;
+        /* Thumb (handle) */
+        .stSlider div[data-baseweb="slider"] div[class*="Thumb"] {
+            background-color: #00CED1 !important;  /* Turquoise color */
+            border-color: #00CED1 !important;  /* Turquoise color */
         }
-        /* Value display background: off-white */
-        div[data-baseweb="slider"] div[class*="ThumbValue"] {
+        /* Value display */
+        .stSlider div[data-baseweb="slider"] div[class*="ThumbValue"] {
             background-color: #fafcff !important;
-            color: #333333 !important;
-        }
-        /* Ensure slider labels match the theme */
-        .stSlider label {
-            color: #333333 !important;
-        }
-        /* Text under sliders (value labels or auxiliary text) */
-        div[data-baseweb="slider"] .stSlider {
             color: #2c3e50 !important;
         }
-        /* Target the starting and ending values specifically */
-        div[data-baseweb="slider"] span {
+        /* All text elements within slider */
+        .stSlider div[data-baseweb="slider"] * {
             color: #2c3e50 !important;
         }
-        /* Additional targeting for slider text elements */
-        .stSlider p {
+        /* Target slider labels */
+        .stSlider label, .stSlider p {
+            color: #2c3e50 !important;
+        }
+        /* Target the min/max values specifically */
+        .stSlider div[data-testid="stSliderMinMax"] * {
             color: #2c3e50 !important;
         }
         </style>
