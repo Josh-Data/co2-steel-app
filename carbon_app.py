@@ -16,7 +16,6 @@ st.set_page_config(
 )
 
 def add_logo():
-    # Create columns for better logo positioning
     col1, col2, col3 = st.columns([1, 6, 1])
     with col1:
         st.image("images/imagelogo.png", width=150)
@@ -24,62 +23,57 @@ def add_logo():
     st.markdown(
         """
         <style>
-        /* Light background for main app */
-        .stApp {
-            background-color: #fafcff;
+        /* Main container background */
+        .main {
+            background-color: #fafcff !important;
         }
         
-        /* Regular text on light background */
+        /* Streamlit specific elements */
+        .css-1d391kg, .css-12oz5g7 {
+            background-color: #fafcff !important;
+        }
+        
+        /* Top header/toolbar area */
+        .css-18ni7ap {
+            background-color: #fafcff !important;
+        }
+        
+        /* Side panel/navigation */
+        .css-1dp5vir {
+            background-color: #fafcff !important;
+        }
+        
+        /* Main content area */
+        .css-1d391kg {
+            background-color: #fafcff !important;
+        }
+        
+        /* Block containers */
+        .css-12oz5g7 {
+            background-color: #fafcff !important;
+        }
+        
+        /* Force all stApp elements to have the same background */
+        .stApp > * {
+            background-color: #fafcff !important;
+        }
+        
+        /* Additional elements from your original CSS */
         .stMarkdown, .stText, .stSelectbox label, .stSlider label, h1, h2, h3, h4, h5, h6, label {
             color: #2c3e50 !important;
         }
         
-        /* Alert styling with light background */
-        .element-container > .stAlert {
-            background-color: #fafcff !important;
-            color: #2c3e50 !important;
-        }
-        .stAlert > div {
-            color: #2c3e50 !important;
-        }
-        
-        /* Button styling with turquoise background */
         button[kind="primary"], .stButton>button {
             background-color: #4abdbe !important;
             color: white !important;
             border: none !important;
         }
         
-        /* Notification styling with light background */
-        div[data-baseweb="notification"] {
-            background-color: #fafcff !important;
-            color: #2c3e50 !important;
-        }
-        div[data-baseweb="notification"] * {
-            color: #2c3e50 !important;
-        }
-        
-        /* Slider styling */
-        div[data-baseweb="slider"] > div,
-        div[data-baseweb="slider"] div[class*="Track"],
-        div[data-baseweb="slider"] div[class*="InnerThumb"],
-        div[data-baseweb="slider"] div[class*="ThumbValue"] {
-            background-color: #fafcff !important;
-            color: #2c3e50 !important;
-        }
-        
-        /* Remove default backgrounds */
         .st-emotion-cache-7ti8k2 {
             background-color: #fafcff !important;
         }
         
-        /* Select box styling */
-        .stSelectbox > div > div {
-            background-color: #fafcff !important;
-            color: #2c3e50 !important;
-        }
-        
-        /* Slider track and thumb styling */
+        /* Slider styling */
         div[data-baseweb="slider"] div[class*="Track__TrackFilled"],
         div[data-baseweb="slider"] div[class*="Track__TrackEmpty"] {
             background-color: #e5e5e5 !important;
@@ -93,11 +87,15 @@ def add_logo():
         div[role="slider"] [class*="Track--filled"] {
             background-color: #4abdbe !important;
         }
+        
+        /* Force iframe and other embedded content backgrounds */
+        iframe, .iframe-container {
+            background-color: #fafcff !important;
+        }
         </style>
         """,
-        unsafe_allow_html=True,
+        unsafe_allow_html=True
     )
-
 
 @st.cache_data
 def load_data():
