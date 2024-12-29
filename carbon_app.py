@@ -16,8 +16,16 @@ st.set_page_config(
 )
 
 def add_logo():
+    # Create columns for better logo positioning
+    col1, col2 = st.columns([1, 4])  # Adjusted ratio for better positioning
     
-    st.image("imagelogo.png", width=150) 
+    # Place logo in the first column
+    with col1:
+        try:
+            st.image("./images/imagelogo.png", width=150)  # Added ./ to ensure relative path
+        except Exception as e:
+            st.error(f"Could not load logo: {e}")  # This will help us debug if there's an issue
+            
     st.markdown(
         """
         <style>
@@ -58,18 +66,10 @@ def add_logo():
             color: white !important;
         }
 
-            /* Logo styling */
-        .block-container::before {
-            content: '';
-            display: block;
-            background-image: url('/Users/joshsingh/Desktop/co2-steel-app/imagelogo.png');
-            background-repeat: no-repeat;
-            background-size: contain;
-            width: 150px;  /* Adjust width as needed */
-            height: 80px;  /* Adjust height as needed */
-            position: absolute;
-            top: 20px;
-            left: 20px;
+        /* Adjust the layout spacing */
+        .block-container {
+            padding-top: 1rem;
+            padding-bottom: 0rem;
         }
 
         /* Target the exact slider elements from the inspection */
@@ -110,13 +110,10 @@ def add_logo():
         div[role="slider"] [class*="Track--filled"] {
             background-color: #4abdbe !important; /* Turquoise color for the slider's filled track */
         }
-
         </style>
         """,
         unsafe_allow_html=True,
     )
-
-add_logo()
 
 
 @st.cache_data
