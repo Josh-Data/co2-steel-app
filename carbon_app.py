@@ -56,33 +56,36 @@ def add_logo():
             padding-top: 120px;
             background-position: 20px 20px;
         }
-        /* Slider specific styles with higher specificity */
-        /* Track background */
-        .stSlider div[data-baseweb="slider"] div[class*="Track"] {
+        /* Super specific slider styles to override globals */
+        div.st-emotion-cache-1dk3k4f div[role="slider"] {
+            background-color: #00CED1 !important;
+            border-color: #00CED1 !important;
+        }
+        
+        div.st-emotion-cache-1dk3k4f div[class*="Track--filled"] {
+            background-color: #00CED1 !important;
+        }
+        
+        div.st-emotion-cache-1dk3k4f div[class*="Track"] {
             background-color: #e0e0e0 !important;
         }
-        /* Active track */
-        .stSlider div[data-baseweb="slider"] div[class*="Track--filled"] {
-            background-color: #00CED1 !important;  /* Turquoise color */
-        }
-        /* Thumb (handle) */
-        .stSlider div[data-baseweb="slider"] div[class*="Thumb"] {
-            background-color: #00CED1 !important;  /* Turquoise color */
-            border-color: #00CED1 !important;  /* Turquoise color */
-        }
+        
         /* Value display */
-        .stSlider div[data-baseweb="slider"] div[class*="ThumbValue"] {
+        div.st-emotion-cache-1dk3k4f div[class*="ThumbValue"] {
             background-color: #fafcff !important;
             color: #2c3e50 !important;
         }
-        /* All text elements within slider */
+        
+        /* Slider text elements */
         .stSlider div[data-baseweb="slider"] * {
             color: #2c3e50 !important;
         }
+        
         /* Target slider labels */
         .stSlider label, .stSlider p {
             color: #2c3e50 !important;
         }
+        
         /* Target the min/max values specifically */
         .stSlider div[data-testid="stSliderMinMax"] * {
             color: #2c3e50 !important;
