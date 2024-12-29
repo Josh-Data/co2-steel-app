@@ -57,28 +57,30 @@ def add_logo():
             padding-top: 120px;
             background-position: 20px 20px;
         }
-        /* Target the exact slider elements from the inspection */
+        /* Slider styling */
         div[data-baseweb="slider"] > div,
         div[data-baseweb="slider"] div[class*="Track"],
         div[data-baseweb="slider"] div[class*="InnerThumb"],
         div[data-baseweb="slider"] div[class*="ThumbValue"] {
-            background-color: #fafcff!important;
+            background-color: #fafcff !important;
             color: #4abdbe !important;
         }
-        /* Remove the turquoise background */
-        .st-emotion-cache-7ti8k2 {
-            background-color: white !important;
-        }
-        /* Select box styling */
-        .stSelectbox > div > div {
-            background-color: white !important;
-            color: #2c3e50 !important;
-        }
-        /* Target the red sliders to make them turquoise */
-        .st-emotion-cache-1dj3ksd {
+        /* Ensure all sliders use the turquoise color */
+        .stSlider > div > div > div {
             background-color: #4abdbe !important;
         }
+        /* Target the active/filled track of the slider */
         div[role="slider"] div[class*="Track--filled"] {
+            background-color: #4abdbe !important;
+        }
+        /* Ensure slider thumbs match turquoise color */
+        div[data-baseweb="slider"] div[class*="Thumb"] {
+            background-color: #4abdbe !important;
+            border-color: #4abdbe !important;
+        }
+        /* Fix for any other red slider elements */
+        .st-emotion-cache-1dj3ksd, 
+        .stSlider > div > div > div[role="slider"] {
             background-color: #4abdbe !important;
         }
         </style>
