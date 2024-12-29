@@ -57,31 +57,28 @@ def add_logo():
             padding-top: 120px;
             background-position: 20px 20px;
         }
-        /* Slider styling */
-        div[data-baseweb="slider"] > div,
-        div[data-baseweb="slider"] div[class*="Track"],
-        div[data-baseweb="slider"] div[class*="InnerThumb"],
-        div[data-baseweb="slider"] div[class*="ThumbValue"] {
-            background-color: #fafcff !important;
-            color: #4abdbe !important;
+        /* Slider styles */
+        /* Inactive (background) track: light gray */
+        div[data-baseweb="slider"] div[class*="Track"] {
+            background-color: #e0e0e0 !important;
         }
-        /* Ensure all sliders use the turquoise color */
-        .stSlider > div > div > div {
-            background-color: #4abdbe !important;
-        }
-        /* Target the active/filled track of the slider */
+        /* Active (filled) track: turquoise */
         div[role="slider"] div[class*="Track--filled"] {
             background-color: #4abdbe !important;
         }
-        /* Ensure slider thumbs match turquoise color */
+        /* Thumb (draggable ball): turquoise */
         div[data-baseweb="slider"] div[class*="Thumb"] {
             background-color: #4abdbe !important;
             border-color: #4abdbe !important;
         }
-        /* Fix for any other red slider elements */
-        .st-emotion-cache-1dj3ksd, 
-        .stSlider > div > div > div[role="slider"] {
-            background-color: #4abdbe !important;
+        /* Value display background: off-white */
+        div[data-baseweb="slider"] div[class*="ThumbValue"] {
+            background-color: #fafcff !important;
+            color: #2c3e50 !important;
+        }
+        /* Ensure slider labels and text match the theme */
+        .stSlider label {
+            color: #2c3e50 !important;
         }
         </style>
         """,
