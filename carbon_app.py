@@ -24,7 +24,7 @@ def add_logo():
     st.markdown(
         """
         <style>
-        /* Light background elements - dark text */
+        /* Light background for main app */
         .stApp {
             background-color: #fafcff;
         }
@@ -33,71 +33,65 @@ def add_logo():
         .stMarkdown, .stText, .stSelectbox label, .stSlider label, h1, h2, h3, h4, h5, h6, label {
             color: #2c3e50 !important;
         }
-
-        /* Dark background elements - white text */
+        
+        /* Alert styling with light background */
         .element-container > .stAlert {
-            background-color: #333333 !important;
-            color: white !important;
+            background-color: #fafcff !important;
+            color: #2c3e50 !important;
         }
         .stAlert > div {
-            color: white !important;
+            color: #2c3e50 !important;
         }
-
-        /* Button styling - dark background with white text */
+        
+        /* Button styling with turquoise background */
         button[kind="primary"], .stButton>button {
-            background-color: #333333 !important;
+            background-color: #4abdbe !important;
             color: white !important;
             border: none !important;
         }
-
-        /* Success message with dark background */
+        
+        /* Notification styling with light background */
         div[data-baseweb="notification"] {
-            background-color: #333333 !important;
-            color: white !important;
+            background-color: #fafcff !important;
+            color: #2c3e50 !important;
         }
-
-        /* Ensure text in notifications is white */
         div[data-baseweb="notification"] * {
-            color: white !important;
+            color: #2c3e50 !important;
         }
-
-        /* Target the exact slider elements from the inspection */
+        
+        /* Slider styling */
         div[data-baseweb="slider"] > div,
         div[data-baseweb="slider"] div[class*="Track"],
         div[data-baseweb="slider"] div[class*="InnerThumb"],
         div[data-baseweb="slider"] div[class*="ThumbValue"] {
-            background-color: #fafcff!important;
-            color: #333333!important;
-        }
-
-        /* Remove the turquoise background */
-        .st-emotion-cache-7ti8k2 {
-            background-color: white !important;
-        }
-
-        /* Select box styling */
-        .stSelectbox > div > div {
-            background-color: white !important;
+            background-color: #fafcff !important;
             color: #2c3e50 !important;
         }
-
-        /* Add rules for turquoise slider */
-        /* Track and thumb elements */
+        
+        /* Remove default backgrounds */
+        .st-emotion-cache-7ti8k2 {
+            background-color: #fafcff !important;
+        }
+        
+        /* Select box styling */
+        .stSelectbox > div > div {
+            background-color: #fafcff !important;
+            color: #2c3e50 !important;
+        }
+        
+        /* Slider track and thumb styling */
         div[data-baseweb="slider"] div[class*="Track__TrackFilled"],
         div[data-baseweb="slider"] div[class*="Track__TrackEmpty"] {
-            background-color: #e5e5e5 !important; /* Gray color for the track */
+            background-color: #e5e5e5 !important;
         }
-
         div[data-baseweb="slider"] div[class*="Track__TrackFilled"] {
-            background-color: #4abdbe !important; /* Turquoise color for the filled part */
+            background-color: #4abdbe !important;
         }
-
         div[data-baseweb="slider"] div[class*="Thumb"] {
-            background-color: #4abdbe !important; /* Turquoise color for the thumb */
+            background-color: #4abdbe !important;
         }
-
         div[role="slider"] [class*="Track--filled"] {
-            background-color: #4abdbe !important; /* Turquoise color for the slider's filled track */
+            background-color: #4abdbe !important;
         }
         </style>
         """,
