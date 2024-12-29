@@ -17,15 +17,10 @@ st.set_page_config(
 
 def add_logo():
     # Create columns for better logo positioning
-    col1, col2 = st.columns([1, 4])  # Adjusted ratio for better positioning
-    
-    # Place logo in the first column
+    col1, col2, col3 = st.columns([1, 6, 1])
     with col1:
-        try:
-            st.image("./images/imagelogo.png", width=150)  # Added ./ to ensure relative path
-        except Exception as e:
-            st.error(f"Could not load logo: {e}")  # This will help us debug if there's an issue
-            
+        st.image("images/imagelogo.png", width=150)
+    
     st.markdown(
         """
         <style>
@@ -64,12 +59,6 @@ def add_logo():
         /* Ensure text in notifications is white */
         div[data-baseweb="notification"] * {
             color: white !important;
-        }
-
-        /* Adjust the layout spacing */
-        .block-container {
-            padding-top: 1rem;
-            padding-bottom: 0rem;
         }
 
         /* Target the exact slider elements from the inspection */
