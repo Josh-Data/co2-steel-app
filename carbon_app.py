@@ -78,7 +78,7 @@ def add_logo():
         }
         /* Ensure slider labels and text match the theme */
         .stSlider label {
-            color: #2c3e50 !important;
+            color: #333333 !important;
         }
         </style>
         """,
