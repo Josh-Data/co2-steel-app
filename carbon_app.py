@@ -62,11 +62,11 @@ def add_logo():
         div[data-baseweb="slider"] div[class*="Track"] {
             background-color: #e0e0e0 !important;
         }
-        /* Active (filled) track: turquoise */
+        /* Active (filled) track: dark gray */
         div[role="slider"] div[class*="Track--filled"] {
             background-color: #333333 !important;
         }
-        /* Thumb (draggable ball): turquoise */
+        /* Thumb (draggable ball): dark gray */
         div[data-baseweb="slider"] div[class*="Thumb"] {
             background-color: #333333 !important;
             border-color: #333333 !important;
@@ -76,9 +76,13 @@ def add_logo():
             background-color: #fafcff !important;
             color: #333333 !important;
         }
-        /* Ensure slider labels and text match the theme */
+        /* Ensure slider labels match the theme */
         .stSlider label {
             color: #333333 !important;
+        }
+        /* Text under sliders (value labels or auxiliary text) */
+        div[data-baseweb="slider"] .stSlider {
+            color: #2c3e50 !important; /* Charcoal color */
         }
         </style>
         """,
